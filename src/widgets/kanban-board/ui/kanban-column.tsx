@@ -8,6 +8,7 @@ interface KanbanColumnProps {
   tasks: Task[]
   nextStatus?: Task['status']
   onTaskStatusChange: (taskId: string, newStatus: Task['status']) => void
+  onAddTask: () => void
 }
 
 export const KanbanColumn = ({
@@ -15,6 +16,7 @@ export const KanbanColumn = ({
   tasks,
   nextStatus,
   onTaskStatusChange,
+  onAddTask,
 }: KanbanColumnProps) => {
   return (
     <section className="flex min-h-[610px] w-[290px] shrink-0 flex-col rounded-2xl border border-border bg-surface-muted p-3 min-[1280px]:w-auto min-[1280px]:min-w-0">
@@ -52,7 +54,11 @@ export const KanbanColumn = ({
           </div>
         ))}
       </div>
-      <Button className="mt-auto w-full justify-start" variant="minimal">
+      <Button
+        className="mt-auto w-full justify-start"
+        variant="minimal"
+        onClick={onAddTask}
+      >
         <PlusIcon />
         Добавить задачу
       </Button>
