@@ -4,4 +4,3 @@ export type CreateTaskInput = Pick<
   Task,
   'title' | 'deadline' | 'status' | 'priority' | 'tag' | 'assignee' | 'space'
 >
-

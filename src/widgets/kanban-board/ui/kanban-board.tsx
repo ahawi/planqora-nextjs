@@ -9,6 +9,13 @@ import {
 import { useState } from 'react'
 
 import { type Task, tasksMock, updateTaskStatus } from '@/src/entities/task'
+import { formatTaskCount } from '@/src/entities/task'
+import {
+  createTask,
+  CreateTaskDialog,
+  CreateTaskForm,
+  type CreateTaskInput,
+} from '@/src/features/create-task'
 import { Button, Progress } from '@/src/shared/ui'
 
 import { columns } from '../model/columns'
@@ -16,6 +23,9 @@ import { KanbanColumn } from './kanban-column'
 
 export function KanbanBoard() {
   const [tasks, setTasks] = useState(tasksMock)
+  const [createTaskStatus, setCreateTaskStatus] = useState<
+    Task['status'] | null
+  >(null)
 
   const handleTaskStatusChange = (
     taskId: string,
@@ -24,6 +34,16 @@ export function KanbanBoard() {
     setTasks((currentTasks) =>
       updateTaskStatus(currentTasks, taskId, newStatus),
     )
+  }
+
+  const handleCreateTask = (input: CreateTaskInput) => {
+    const newTask = createTask(input, crypto.randomUUID())
+
+    setTasks((currentTasks) => {
+      return [...currentTasks, newTask]
+    })
+
+    setCreateTaskStatus(null)
   }
 
   return (
@@ -58,7 +78,7 @@ export function KanbanBoard() {
               </Button>
             </div>
             <div className="mt-5 flex flex-wrap items-center gap-6 text-xs text-secondary-400">
-              <span>▣ &nbsp;8 задач</span>
+              <span>▣ &nbsp;{formatTaskCount(tasks.length)}</span>
               <span>♙ &nbsp;3 участника</span>
               <div className="flex items-center gap-3">
                 <span className="text-secondary-500">67% готово</span>
@@ -79,13 +99,23 @@ export function KanbanBoard() {
               <UserGroupIcon />
               Участники
             </Button>
-            <Button>
+            <Button onClick={() => setCreateTaskStatus('backlog')}>
               <PlusIcon />
               Новая задача
             </Button>
           </div>
         </div>
       </header>
+
+      {createTaskStatus !== null && (
+        <CreateTaskDialog onClose={() => setCreateTaskStatus(null)}>
+          <CreateTaskForm
+            onSubmit={handleCreateTask}
+            onCancel={() => setCreateTaskStatus(null)}
+            initialStatus={createTaskStatus}
+          />
+        </CreateTaskDialog>
+      )}
 
       <div className="min-h-0 flex-1 overflow-auto bg-primary-0 px-[clamp(20px,3vw,36px)] py-7 max-[860px]:px-[clamp(20px,7vw,32px)] [scrollbar-width:thin]">
         <div className="grid min-w-max grid-flow-col gap-4 min-[1280px]:min-w-0 min-[1280px]:grid-flow-row min-[1280px]:grid-cols-4">
@@ -103,6 +133,7 @@ export function KanbanBoard() {
                 onTaskStatusChange={handleTaskStatusChange}
                 tasks={columnTasks}
                 title={column.title}
+                onAddTask={() => setCreateTaskStatus(column.id)}
               />
             )
           })}
