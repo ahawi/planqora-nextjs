@@ -23,9 +23,9 @@ export function KanbanTaskCard({ task }: { task: Task }) {
   const priority = priorityStyles[task.priority]
 
   return (
-    <Card className="p-4 shadow-sm">
+    <Card className="p-4 shadow-sm max-[520px]:p-3">
       <div className="flex items-start justify-between gap-3">
-        <h3 className="text-sm font-semibold leading-snug">
+        <h3 className="text-sm font-semibold leading-snug max-[520px]:text-xs">
           <Link className="hover:text-primary-600" href={`/tasks/${task.id}`}>
             {task.title}
           </Link>
@@ -41,11 +41,11 @@ export function KanbanTaskCard({ task }: { task: Task }) {
         </Button>
       </div>
       <span
-        className={`mt-3 inline-flex rounded-lg px-2 py-1 text-[10px] font-bold ${priority.style}`}
+        className={`mt-3 inline-flex rounded-lg px-2 py-1 text-[10px] font-bold max-[520px]:mt-2 ${priority.style}`}
       >
         ↑&nbsp; {priority.label}
       </span>
-      <div className="mt-4 flex items-center gap-3 text-[11px] text-secondary-400">
+      <div className="mt-4 flex items-center gap-3 text-[11px] text-secondary-400 max-[520px]:mt-3 max-[520px]:gap-2">
         <span className="grid size-6 place-items-center rounded-full bg-secondary-400 text-[8px] font-bold text-primary-0">
           {task.assignee}
         </span>
@@ -58,7 +58,7 @@ export function KanbanTaskCard({ task }: { task: Task }) {
           {task.comments}
         </span>
       </div>
-      <div className="mt-3 flex justify-end">
+      <div className="mt-3 flex justify-end max-[520px]:mt-2">
         <span className="rounded-lg bg-information-100 px-2 py-1 text-[10px] font-medium text-information-800">
           {task.tag}
         </span>
