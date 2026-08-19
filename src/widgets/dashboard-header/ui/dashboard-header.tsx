@@ -4,10 +4,10 @@ import { Button } from '@/src/shared/ui'
 
 function UserActions() {
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-3 max-[520px]:gap-2">
       <Button
         aria-label="Уведомления"
-        className="relative rounded-full"
+        className="relative rounded-full max-[520px]:size-9"
         iconOnly
         variant="secondary"
       >
@@ -16,7 +16,7 @@ function UserActions() {
       </Button>
       <Button
         aria-label="Профиль Насти"
-        className="rounded-full bg-gradient-to-br from-warning-300 to-secondary-400 text-primary-0"
+        className="rounded-full bg-gradient-to-br from-warning-300 to-secondary-400 text-primary-0 max-[520px]:size-9"
         iconOnly
         variant="minimal"
       >
@@ -28,10 +28,10 @@ function UserActions() {
 
 export function MobileHeader() {
   return (
-    <header className="hidden min-h-[104px] items-center justify-between border-b border-border bg-primary-0 px-[clamp(20px,7vw,32px)] max-[860px]:flex">
+    <header className="hidden min-h-[104px] items-center justify-between border-b border-border bg-primary-0 px-[clamp(20px,7vw,32px)] max-[860px]:flex max-[520px]:min-h-[72px] max-[520px]:px-4">
       <Button
         aria-label="Открыть меню"
-        className="rounded-full"
+        className="rounded-full max-[520px]:size-9"
         iconOnly
         variant="secondary"
       >

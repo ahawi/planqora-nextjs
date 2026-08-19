@@ -48,8 +48,8 @@ export function KanbanBoard() {
 
   return (
     <section className="flex h-full min-h-0 flex-col overflow-hidden">
-      <header className="shrink-0 border-b border-border px-[clamp(20px,3vw,36px)] py-5 max-[860px]:px-[clamp(20px,7vw,32px)]">
-        <div className="mb-8 flex items-center justify-between gap-6">
+      <header className="shrink-0 border-b border-border px-[clamp(20px,3vw,36px)] py-5 max-[860px]:px-[clamp(20px,7vw,32px)] max-[520px]:px-4 max-[520px]:py-3.5">
+        <div className="mb-8 flex items-center justify-between gap-6 max-[520px]:hidden">
           <p className="text-sm text-secondary-400">
             <span className="max-[520px]:hidden">
               Пространства&nbsp; / &nbsp;
@@ -67,39 +67,55 @@ export function KanbanBoard() {
             />
           </label>
         </div>
-        <div className="flex flex-wrap items-center justify-between gap-5">
+        <div className="flex flex-wrap items-center justify-between gap-5 max-[520px]:gap-3">
           <div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-[clamp(24px,3vw,32px)] font-bold tracking-[-0.04em]">
+            <div className="flex items-center gap-3 max-[520px]:gap-2">
+              <h1 className="text-[clamp(24px,3vw,32px)] font-bold tracking-[-0.04em] max-[520px]:text-xl">
                 Редизайн сайта
               </h1>
-              <Button size="sm" variant="secondary">
+              <Button
+                className="max-[520px]:h-7 max-[520px]:px-2 max-[520px]:text-[11px]"
+                size="sm"
+                variant="secondary"
+              >
                 ● В работе
               </Button>
             </div>
-            <div className="mt-5 flex flex-wrap items-center gap-6 text-xs text-secondary-400">
+            <div className="mt-5 flex flex-wrap items-center gap-6 text-xs text-secondary-400 max-[520px]:mt-3 max-[520px]:gap-2 max-[520px]:text-[11px]">
               <span>▣ &nbsp;{formatTaskCount(tasks.length)}</span>
               <span>♙ &nbsp;3 участника</span>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 max-[520px]:gap-2">
                 <span className="text-secondary-500">67% готово</span>
-                <Progress className="w-36" value={67} />
+                <Progress className="w-36 max-[520px]:w-16" value={67} />
               </div>
             </div>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <Button variant="secondary">
+          <div className="flex flex-wrap gap-2 max-[520px]:grid max-[520px]:w-full max-[520px]:grid-cols-2">
+            <Button
+              className="max-[520px]:h-9 max-[520px]:px-2 max-[520px]:text-xs"
+              variant="secondary"
+            >
               <MagnifyingGlassIcon />
               Поиск
             </Button>
-            <Button variant="secondary">
+            <Button
+              className="max-[520px]:h-9 max-[520px]:px-2 max-[520px]:text-xs"
+              variant="secondary"
+            >
               <AdjustmentsHorizontalIcon />
               Фильтры
             </Button>
-            <Button variant="secondary">
+            <Button
+              className="max-[520px]:h-9 max-[520px]:px-2 max-[520px]:text-xs"
+              variant="secondary"
+            >
               <UserGroupIcon />
               Участники
             </Button>
-            <Button onClick={() => setCreateTaskStatus('backlog')}>
+            <Button
+              className="max-[520px]:h-9 max-[520px]:px-2 max-[520px]:text-xs"
+              onClick={() => setCreateTaskStatus('backlog')}
+            >
               <PlusIcon />
               Новая задача
             </Button>
@@ -117,8 +133,8 @@ export function KanbanBoard() {
         </CreateTaskDialog>
       )}
 
-      <div className="min-h-0 flex-1 overflow-auto bg-primary-0 px-[clamp(20px,3vw,36px)] py-7 max-[860px]:px-[clamp(20px,7vw,32px)] [scrollbar-width:thin]">
-        <div className="grid min-w-max grid-flow-col gap-4 min-[1280px]:min-w-0 min-[1280px]:grid-flow-row min-[1280px]:grid-cols-4">
+      <div className="min-h-0 flex-1 overflow-auto bg-primary-0 px-[clamp(20px,3vw,36px)] py-7 max-[860px]:px-[clamp(20px,7vw,32px)] max-[520px]:px-4 max-[520px]:py-3 [scrollbar-width:thin]">
+        <div className="grid min-w-max grid-flow-col gap-4 max-[520px]:gap-3 min-[1280px]:min-w-0 min-[1280px]:grid-flow-row min-[1280px]:grid-cols-4">
           {columns.map((column, idx) => {
             const nextStatus = columns[idx + 1]?.id
 

@@ -19,8 +19,8 @@ export const KanbanColumn = ({
   onAddTask,
 }: KanbanColumnProps) => {
   return (
-    <section className="flex min-h-[610px] w-[290px] shrink-0 flex-col rounded-2xl border border-border bg-surface-muted p-3 min-[1280px]:w-auto min-[1280px]:min-w-0">
-      <header className="mb-3 flex items-center justify-between px-1 py-1">
+    <section className="flex min-h-[610px] w-[290px] shrink-0 flex-col rounded-2xl border border-border bg-surface-muted p-3 max-[520px]:min-h-[520px] max-[520px]:w-[calc(100vw-32px)] max-[520px]:p-2.5 min-[1280px]:w-auto min-[1280px]:min-w-0">
+      <header className="mb-3 flex items-center justify-between px-1 py-1 max-[520px]:mb-2 max-[520px]:py-0">
         <div className="flex items-center gap-2">
           <h2 className="text-sm font-bold">{title}</h2>
           <span className="grid size-6 place-items-center rounded-lg bg-primary-0 text-[11px] text-secondary-400">
@@ -36,7 +36,7 @@ export const KanbanColumn = ({
           •••
         </Button>
       </header>
-      <div className="grid gap-3">
+      <div className="grid gap-3 max-[520px]:gap-2.5">
         {tasks.map((task) => (
           <div className="grid gap-2" key={task.id}>
             <KanbanTaskCard task={task} />

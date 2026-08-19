@@ -201,10 +201,21 @@ export const CreateTaskForm = ({
       </div>
 
       <div className="flex justify-end gap-3 border-t border-border pt-5 max-[420px]:grid max-[420px]:grid-cols-2">
-        <Button onClick={onCancel} size="lg" type="button" variant="secondary">
+        <Button
+          className="whitespace-nowrap max-[420px]:px-3 max-[420px]:text-sm"
+          onClick={onCancel}
+          size="lg"
+          type="button"
+          variant="secondary"
+        >
           Отмена
         </Button>
-        <Button disabled={isSubmitting} size="lg" type="submit">
+        <Button
+          className="whitespace-nowrap max-[420px]:px-3 max-[420px]:text-sm"
+          disabled={isSubmitting}
+          size="lg"
+          type="submit"
+        >
           Создать задачу
         </Button>
       </div>
