@@ -1,0 +1,118 @@
+import type { ChatMessage, Conversation } from './types'
+
+export const conversationsMock: Conversation[] = [
+  {
+    id: 'delba',
+    name: 'Дарья Волкова',
+    avatar: '/customers/delba-de-oliveira.png',
+    preview: 'Спасибо! Всё получилось…',
+    time: '1 мин.',
+    unread: true,
+    online: true,
+  },
+  {
+    id: 'michael',
+    name: 'Михаил Орлов',
+    avatar: '/customers/michael-novotny.png',
+    preview: 'Я обновил макеты главной',
+    time: '2 мин.',
+    unread: false,
+    online: true,
+  },
+  {
+    id: 'amy',
+    name: 'Анна Крылова',
+    avatar: '/customers/amy-burns.png',
+    preview: 'Посмотри задачу, пожалуйста',
+    time: '5 мин.',
+    unread: true,
+    online: false,
+  },
+  {
+    id: 'lee',
+    name: 'Лев Соколов',
+    avatar: '/customers/lee-robinson.png',
+    preview: 'Созвонимся после обеда?',
+    time: '12 мин.',
+    unread: false,
+    online: true,
+  },
+  {
+    id: 'balazs',
+    name: 'Максим Иванов',
+    avatar: '/customers/balazs-orban.png',
+    preview: 'Отправил комментарии',
+    time: '30 мин.',
+    unread: true,
+    online: false,
+  },
+  {
+    id: 'evil',
+    name: 'Ольга Белова',
+    avatar: '/customers/evil-rabbit.png',
+    preview: 'Задача готова к проверке',
+    time: '1 ч.',
+    unread: false,
+    online: false,
+  },
+  {
+    id: 'sofia',
+    name: 'София Морозова',
+    avatar: '/customers/amy-burns.png',
+    preview: 'Можно уточнить детали?',
+    time: '2 ч.',
+    unread: true,
+    online: false,
+  },
+  {
+    id: 'alex',
+    name: 'Алексей Петров',
+    avatar: '/customers/lee-robinson.png',
+    preview: 'Добавил новую задачу',
+    time: '3 ч.',
+    unread: false,
+    online: true,
+  },
+]
+
+export const messagesMock: ChatMessage[] = [
+  {
+    id: '1',
+    direction: 'outgoing',
+    text: 'Привет! Есть вопрос по главной странице проекта.',
+    time: '11:52',
+  },
+  {
+    id: '2',
+    direction: 'incoming',
+    text: 'Привет! Конечно, что именно нужно уточнить?',
+    time: '11:53',
+  },
+  {
+    id: '3',
+    direction: 'outgoing',
+    attachment: {
+      image: '/mockups/orbit-kanban-dashboard.png',
+      caption: 'Как лучше адаптировать эту доску для мобильных?',
+    },
+    time: '11:55',
+  },
+  {
+    id: '4',
+    direction: 'outgoing',
+    text: 'Оставить горизонтальный скролл или складывать колонки?',
+    time: '11:55',
+  },
+  {
+    id: '5',
+    direction: 'incoming',
+    text: 'Лучше оставить горизонтальный скролл колонок и добавить scroll-snap. Так контекст Kanban не потеряется.',
+    time: '11:57',
+  },
+  {
+    id: '6',
+    direction: 'incoming',
+    text: 'Я оставила комментарий в задаче — можешь посмотреть.',
+    time: '11:58',
+  },
+]
