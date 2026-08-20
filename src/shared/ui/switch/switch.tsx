@@ -12,13 +12,13 @@ interface SwitchProps extends Omit<
   onCheckedChange?: (checked: boolean) => void
 }
 
-export function Switch({
+export const Switch = ({
   checked,
   className,
   disabled,
   onCheckedChange,
   ...props
-}: SwitchProps) {
+}: SwitchProps) => {
   return (
     <button
       aria-checked={checked}

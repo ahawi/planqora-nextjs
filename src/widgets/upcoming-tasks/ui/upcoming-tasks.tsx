@@ -1,7 +1,7 @@
 import { TaskCard, upcomingTasksMock } from '@/src/entities/task'
 import { SectionHeading } from '@/src/shared/ui'
 
-export function UpcomingTasks() {
+export const UpcomingTasks = () => {
   return (
     <section className="mt-[38px] [@media(max-height:950px)]:mt-5 max-[860px]:mt-[34px]">
       <SectionHeading actionLabel="Смотреть все" title="Ближайшие задачи" />

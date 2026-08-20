@@ -1,6 +1,6 @@
 import { Skeleton } from '@/src/shared/ui'
 
-function ConversationSkeleton({ active = false }: { active?: boolean }) {
+const ConversationSkeleton = ({ active = false }: { active?: boolean }) => {
   return (
     <div
       className={`flex items-center gap-3 rounded-xl p-3 max-[860px]:rounded-none max-[860px]:border-b max-[860px]:border-border max-[860px]:px-2 max-[860px]:py-5 ${active ? 'bg-surface-subtle' : ''}`}
@@ -16,7 +16,7 @@ function ConversationSkeleton({ active = false }: { active?: boolean }) {
   )
 }
 
-export function MessagesSkeleton() {
+export const MessagesSkeleton = () => {
   return (
     <section
       className="flex h-full min-h-0 flex-col overflow-hidden bg-primary-0"

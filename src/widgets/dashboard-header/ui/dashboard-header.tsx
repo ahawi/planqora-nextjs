@@ -2,7 +2,7 @@ import { Bars3Icon, BellIcon } from '@heroicons/react/24/outline'
 
 import { Button } from '@/src/shared/ui'
 
-function UserActions() {
+const UserActions = () => {
   return (
     <div className="flex items-center gap-3 max-[520px]:gap-2">
       <Button
@@ -26,7 +26,7 @@ function UserActions() {
   )
 }
 
-export function MobileHeader() {
+export const MobileHeader = () => {
   return (
     <header className="hidden min-h-[104px] items-center justify-between border-b border-border bg-primary-0 px-[clamp(20px,7vw,32px)] max-[860px]:flex max-[520px]:min-h-[72px] max-[520px]:px-4">
       <Button
@@ -47,10 +47,10 @@ interface DashboardHeaderProps {
   title?: string
 }
 
-export function DashboardHeader({
+export const DashboardHeader = ({
   subtitle = 'Давайте завершим важные задачи сегодня.',
   title = 'Привет, Настя!',
-}: DashboardHeaderProps) {
+}: DashboardHeaderProps) => {
   return (
     <header className="mb-[42px] flex items-center justify-between gap-6 [@media(max-height:950px)]:mb-5 max-[860px]:mb-[30px]">
       <div>

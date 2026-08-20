@@ -9,6 +9,7 @@ interface KanbanColumnProps {
   nextStatus?: Task['status']
   onTaskStatusChange: (taskId: string, newStatus: Task['status']) => void
   onAddTask: () => void
+  onDeleteRequest: (taskId: string) => void
 }
 
 export const KanbanColumn = ({
@@ -17,6 +18,7 @@ export const KanbanColumn = ({
   nextStatus,
   onTaskStatusChange,
   onAddTask,
+  onDeleteRequest,
 }: KanbanColumnProps) => {
   return (
     <section className="flex min-h-[610px] w-[290px] shrink-0 flex-col rounded-2xl border border-border bg-surface-muted p-3 max-[520px]:min-h-[520px] max-[520px]:w-[calc(100vw-32px)] max-[520px]:p-2.5 min-[1280px]:w-auto min-[1280px]:min-w-0">
@@ -39,7 +41,7 @@ export const KanbanColumn = ({
       <div className="grid gap-3 max-[520px]:gap-2.5">
         {tasks.map((task) => (
           <div className="grid gap-2" key={task.id}>
-            <KanbanTaskCard task={task} />
+            <KanbanTaskCard task={task} onDeleteRequest={onDeleteRequest} />
 
             {nextStatus && (
               <Button

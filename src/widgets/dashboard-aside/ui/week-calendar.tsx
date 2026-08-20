@@ -12,7 +12,7 @@ const week = [
   ['Вс', '16'],
 ]
 
-export function WeekCalendar() {
+export const WeekCalendar = () => {
   return (
     <Card className="border-0 px-5 pb-5 pt-6">
       <div className="mb-[22px] flex items-center justify-between text-sm font-extrabold">

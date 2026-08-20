@@ -3,8 +3,10 @@ import { SettingsPanel } from '@/src/widgets/settings-panel'
 
 export const dynamic = 'force-dynamic'
 
-export default async function SettingsPage() {
+const SettingsPage = async () => {
   await delay(ROUTE_SKELETON_DELAY)
 
   return <SettingsPanel />
 }
+
+export default SettingsPage

@@ -1,6 +1,6 @@
 import { Card } from '@/src/shared/ui'
 
-export function RunningTasksCard() {
+export const RunningTasksCard = () => {
   return (
     <Card className="min-h-[238px] border-0 bg-secondary-500 p-[26px] text-primary-0 [@media(max-height:950px)]:min-h-[190px] [@media(max-height:950px)]:p-5 max-[860px]:min-h-[124px] max-[860px]:p-5">
       <h2 className="text-base font-semibold max-[860px]:text-sm">

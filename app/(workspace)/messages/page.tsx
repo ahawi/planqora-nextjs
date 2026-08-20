@@ -3,8 +3,10 @@ import { Messenger } from '@/src/widgets/messenger'
 
 export const dynamic = 'force-dynamic'
 
-export default async function MessagesPage() {
+const MessagesPage = async () => {
   await delay(ROUTE_SKELETON_DELAY)
 
   return <Messenger />
 }
+
+export default MessagesPage

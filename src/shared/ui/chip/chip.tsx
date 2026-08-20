@@ -9,13 +9,13 @@ interface ChipProps extends HTMLAttributes<HTMLSpanElement> {
   removeLabel?: string
 }
 
-export function Chip({
+export const Chip = ({
   children,
   className,
   onRemove,
   removeLabel = 'Удалить',
   ...props
-}: ChipProps) {
+}: ChipProps) => {
   return (
     <span
       className={cn(

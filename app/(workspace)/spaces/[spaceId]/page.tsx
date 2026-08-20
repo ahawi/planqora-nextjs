@@ -3,8 +3,10 @@ import { KanbanBoard } from '@/src/widgets/kanban-board'
 
 export const dynamic = 'force-dynamic'
 
-export default async function SpacePage() {
+const SpacePage = async () => {
   await delay(ROUTE_SKELETON_DELAY)
 
   return <KanbanBoard />
 }
+
+export default SpacePage

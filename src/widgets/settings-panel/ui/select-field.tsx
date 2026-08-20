@@ -1,13 +1,13 @@
 import { ChevronDownIcon } from '@heroicons/react/24/outline'
 import type { ReactNode } from 'react'
 
-export function SelectField({
+export const SelectField = ({
   children,
   label,
 }: {
   children: ReactNode
   label: string
-}) {
+}) => {
   return (
     <label className="block">
       <span className="mb-3 block text-sm font-bold text-secondary-500">

@@ -5,7 +5,7 @@ interface SectionHeadingProps {
   title: string
 }
 
-export function SectionHeading({ actionLabel, title }: SectionHeadingProps) {
+export const SectionHeading = ({ actionLabel, title }: SectionHeadingProps) => {
   return (
     <div className="mb-4 flex items-center justify-between gap-5 min-[861px]:mb-[18px]">
       <h2 className="text-[clamp(21px,2vw,24px)] font-bold tracking-[-0.04em]">

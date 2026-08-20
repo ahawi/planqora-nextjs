@@ -8,24 +8,33 @@ import {
 } from '@heroicons/react/24/outline'
 import { useState } from 'react'
 
-import { type Task, tasksMock, updateTaskStatus } from '@/src/entities/task'
-import { formatTaskCount } from '@/src/entities/task'
+import {
+  deleteTask,
+  formatTaskCount,
+  type Task,
+  tasksMock,
+  updateTaskStatus,
+} from '@/src/entities/task'
 import {
   createTask,
   CreateTaskDialog,
   CreateTaskForm,
   type CreateTaskInput,
 } from '@/src/features/create-task'
+import { DeleteTaskDialog } from '@/src/features/delete-task'
 import { Button, Progress } from '@/src/shared/ui'
 
 import { columns } from '../model/columns'
 import { KanbanColumn } from './kanban-column'
 
-export function KanbanBoard() {
+export const KanbanBoard = () => {
   const [tasks, setTasks] = useState(tasksMock)
   const [createTaskStatus, setCreateTaskStatus] = useState<
     Task['status'] | null
   >(null)
+  const [taskIdToDelete, setTaskIdToDelete] = useState<string | null>(null)
+
+  const taskToDelete = tasks.find((task) => task.id === taskIdToDelete) ?? null
 
   const handleTaskStatusChange = (
     taskId: string,
@@ -44,6 +53,17 @@ export function KanbanBoard() {
     })
 
     setCreateTaskStatus(null)
+  }
+
+  const handleDeleteRequest = (taskId: string) => {
+    setTaskIdToDelete(taskId)
+  }
+
+  const handleConfirmDelete = () => {
+    if (!taskIdToDelete) return
+
+    setTasks((currentTasks) => deleteTask(currentTasks, taskIdToDelete))
+    setTaskIdToDelete(null)
   }
 
   return (
@@ -133,6 +153,14 @@ export function KanbanBoard() {
         </CreateTaskDialog>
       )}
 
+      {taskToDelete !== null && (
+        <DeleteTaskDialog
+          taskTitle={taskToDelete.title}
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setTaskIdToDelete(null)}
+        />
+      )}
+
       <div className="min-h-0 flex-1 overflow-auto bg-primary-0 px-[clamp(20px,3vw,36px)] py-7 max-[860px]:px-[clamp(20px,7vw,32px)] max-[520px]:px-4 max-[520px]:py-3 [scrollbar-width:thin]">
         <div className="grid min-w-max grid-flow-col gap-4 max-[520px]:gap-3 min-[1280px]:min-w-0 min-[1280px]:grid-flow-row min-[1280px]:grid-cols-4">
           {columns.map((column, idx) => {
@@ -150,6 +178,7 @@ export function KanbanBoard() {
                 tasks={columnTasks}
                 title={column.title}
                 onAddTask={() => setCreateTaskStatus(column.id)}
+                onDeleteRequest={handleDeleteRequest}
               />
             )
           })}

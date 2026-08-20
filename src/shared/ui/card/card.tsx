@@ -2,7 +2,7 @@ import type { HTMLAttributes } from 'react'
 
 import { cn } from '@/src/shared/lib'
 
-export function Card({ className, ...props }: HTMLAttributes<HTMLElement>) {
+export const Card = ({ className, ...props }: HTMLAttributes<HTMLElement>) => {
   return (
     <article
       className={cn(
@@ -14,10 +14,10 @@ export function Card({ className, ...props }: HTMLAttributes<HTMLElement>) {
   )
 }
 
-export function CardHeader({
+export const CardHeader = ({
   className,
   ...props
-}: HTMLAttributes<HTMLDivElement>) {
+}: HTMLAttributes<HTMLDivElement>) => {
   return (
     <div
       className={cn('flex items-start justify-between gap-4', className)}
@@ -26,17 +26,17 @@ export function CardHeader({
   )
 }
 
-export function CardContent({
+export const CardContent = ({
   className,
   ...props
-}: HTMLAttributes<HTMLDivElement>) {
+}: HTMLAttributes<HTMLDivElement>) => {
   return <div className={cn(className)} {...props} />
 }
 
-export function CardFooter({
+export const CardFooter = ({
   className,
   ...props
-}: HTMLAttributes<HTMLDivElement>) {
+}: HTMLAttributes<HTMLDivElement>) => {
   return (
     <div
       className={cn('flex items-center justify-between', className)}

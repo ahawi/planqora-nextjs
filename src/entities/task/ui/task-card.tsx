@@ -16,7 +16,7 @@ const coverClasses: Record<Task['coverTone'], string> = {
   warning: 'from-secondary-500 via-error-400 to-warning-300',
 }
 
-function TaskCover({ tone }: { tone: Task['coverTone'] }) {
+const TaskCover = ({ tone }: { tone: Task['coverTone'] }) => {
   return (
     <div
       className={`relative h-[clamp(125px,38vw,170px)] overflow-hidden rounded-[14px] bg-gradient-to-br ${coverClasses[tone]} min-[861px]:h-[116px] [@media(max-height:950px)]:h-20`}
@@ -27,7 +27,7 @@ function TaskCover({ tone }: { tone: Task['coverTone'] }) {
   )
 }
 
-export function TaskCard({ task }: { task: Task }) {
+export const TaskCard = ({ task }: { task: Task }) => {
   return (
     <Card className="snap-start p-3.5 transition [@media(max-height:950px)]:p-2.5 hover:-translate-y-0.5 hover:shadow-lg">
       <TaskCover tone={task.coverTone} />

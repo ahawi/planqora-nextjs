@@ -1,7 +1,7 @@
 import { PauseIcon } from '@heroicons/react/24/outline'
 import Image from 'next/image'
 
-export function TaskPreview() {
+export const TaskPreview = () => {
   return (
     <div className="relative aspect-[16/8.2] min-h-[260px] overflow-hidden rounded-[16px] max-[620px]:aspect-[4/3]">
       <Image

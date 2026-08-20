@@ -6,7 +6,7 @@ import { Button } from '@/src/shared/ui'
 
 import { SelectField } from './select-field'
 
-export function GeneralSettings() {
+export const GeneralSettings = () => {
   const [timeFormat, setTimeFormat] = useState<'12' | '24'>('24')
 
   return (

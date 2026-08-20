@@ -12,14 +12,14 @@ interface EmptyStateProps extends Omit<
   title: ReactNode
 }
 
-export function EmptyState({
+export const EmptyState = ({
   action,
   className,
   description,
   icon,
   title,
   ...props
-}: EmptyStateProps) {
+}: EmptyStateProps) => {
   return (
     <div
       aria-live="polite"

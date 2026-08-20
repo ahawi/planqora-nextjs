@@ -1,7 +1,7 @@
 import {
   CalendarDaysIcon,
   ChatBubbleOvalLeftIcon,
-  EllipsisHorizontalIcon,
+  TrashIcon,
 } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 
@@ -19,8 +19,20 @@ const priorityStyles: Record<
   low: { label: 'Низкий', style: 'bg-success-100 text-success-800' },
 }
 
-export function KanbanTaskCard({ task }: { task: Task }) {
+interface KanbanTaskCardProps {
+  task: Task
+  onDeleteRequest: (taskId: string) => void
+}
+
+export const KanbanTaskCard = ({
+  task,
+  onDeleteRequest,
+}: KanbanTaskCardProps) => {
   const priority = priorityStyles[task.priority]
+
+  const handleDeleteRequest = (taskId: string) => {
+    onDeleteRequest(taskId)
+  }
 
   return (
     <Card className="p-4 shadow-sm max-[520px]:p-3">
@@ -31,13 +43,14 @@ export function KanbanTaskCard({ task }: { task: Task }) {
           </Link>
         </h3>
         <Button
-          aria-label={`Меню задачи ${task.title}`}
+          aria-label={`Удалить задачу ${task.title}`}
           className="-mr-2 -mt-2"
           iconOnly
           size="sm"
           variant="minimal"
+          onClick={() => handleDeleteRequest(task.id)}
         >
-          <EllipsisHorizontalIcon />
+          <TrashIcon />
         </Button>
       </div>
       <span

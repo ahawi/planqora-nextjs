@@ -1,6 +1,7 @@
 export { formatTaskCount } from './lib/format-task-count'
 export { getTaskDueLabel } from './lib/get-task-due-label'
 export { priorityLabels, statusLabels } from './model/constants'
+export { deleteTask } from './model/delete-task'
 export { tasksMock, upcomingTasksMock } from './model/mocks'
 export { type Task } from './model/types'
 export { updateTaskStatus } from './model/update-task-status'

@@ -8,7 +8,7 @@ import { UpcomingTasks } from '@/src/widgets/upcoming-tasks'
 
 export const dynamic = 'force-dynamic'
 
-export default async function Page() {
+const Page = async () => {
   await delay(ROUTE_SKELETON_DELAY)
 
   return (
@@ -20,3 +20,5 @@ export default async function Page() {
     </DashboardLayout>
   )
 }
+
+export default Page

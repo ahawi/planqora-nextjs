@@ -1,6 +1,6 @@
 import { Card } from '@/src/shared/ui'
 
-export function ActivityCard() {
+export const ActivityCard = () => {
   return (
     <Card className="border-0 bg-surface-muted p-[26px] [@media(max-height:950px)]:p-5 max-[860px]:p-5">
       <div className="flex items-center justify-between">

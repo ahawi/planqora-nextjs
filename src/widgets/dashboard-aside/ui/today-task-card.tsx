@@ -8,7 +8,7 @@ const subtasks = [
   'Проверить адаптивность',
 ]
 
-export function TodayTaskCard() {
+export const TodayTaskCard = () => {
   return (
     <Card className="mt-6 border-0 p-[25px] max-[1180px]:mt-0">
       <div className="flex items-center justify-between">

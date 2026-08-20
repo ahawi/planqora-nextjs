@@ -1,7 +1,7 @@
 import { SpaceCard, spacesMock } from '@/src/entities/space'
 import { SectionHeading } from '@/src/shared/ui'
 
-export function SpacesSection() {
+export const SpacesSection = () => {
   return (
     <section
       className="mt-[38px] [@media(max-height:950px)]:mt-5 max-[860px]:mt-[34px]"

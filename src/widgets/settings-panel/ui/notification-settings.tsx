@@ -11,7 +11,7 @@ const notificationOptions = [
   { id: 'space-updates', label: 'Обновления пространств', enabled: false },
 ]
 
-export function NotificationSettings() {
+export const NotificationSettings = () => {
   const [values, setValues] = useState(() =>
     Object.fromEntries(
       notificationOptions.map(({ enabled, id }) => [id, enabled]),

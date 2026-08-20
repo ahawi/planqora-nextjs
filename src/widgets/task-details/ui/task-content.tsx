@@ -16,7 +16,7 @@ const checklist = [
   'Проверить доступность и состояния интерфейса',
 ]
 
-export function TaskContent({ task }: { task: Task }) {
+export const TaskContent = ({ task }: { task: Task }) => {
   return (
     <Card className="border-0 p-5 min-[700px]:p-7">
       <TaskPreview />
