@@ -13,6 +13,7 @@ import {
   formatTaskCount,
   type Task,
   tasksMock,
+  updateTask,
   updateTaskStatus,
 } from '@/src/entities/task'
 import {
@@ -22,6 +23,11 @@ import {
   type CreateTaskInput,
 } from '@/src/features/create-task'
 import { DeleteTaskDialog } from '@/src/features/delete-task'
+import {
+  EditTaskDialog,
+  EditTaskForm,
+  type EditTaskInput,
+} from '@/src/features/edit-task'
 import { Button, Progress } from '@/src/shared/ui'
 
 import { columns } from '../model/columns'
@@ -33,8 +39,10 @@ export const KanbanBoard = () => {
     Task['status'] | null
   >(null)
   const [taskIdToDelete, setTaskIdToDelete] = useState<string | null>(null)
+  const [taskIdToEdit, setTaskIdToEdit] = useState<string | null>(null)
 
   const taskToDelete = tasks.find((task) => task.id === taskIdToDelete) ?? null
+  const taskToEdit = tasks.find((task) => task.id === taskIdToEdit) ?? null
 
   const handleTaskStatusChange = (
     taskId: string,
@@ -64,6 +72,33 @@ export const KanbanBoard = () => {
 
     setTasks((currentTasks) => deleteTask(currentTasks, taskIdToDelete))
     setTaskIdToDelete(null)
+  }
+
+  const handleEditRequest = (taskId: string) => {
+    setTaskIdToEdit(taskId)
+  }
+
+  const handleCreateBacklogTask = () => {
+    setCreateTaskStatus('backlog')
+  }
+
+  const handleCloseCreateTask = () => {
+    setCreateTaskStatus(null)
+  }
+
+  const handleCancelDelete = () => {
+    setTaskIdToDelete(null)
+  }
+
+  const handleCloseEdit = () => {
+    setTaskIdToEdit(null)
+  }
+
+  const handleEditTask = (input: EditTaskInput) => {
+    if (!taskIdToEdit) return
+
+    setTasks((currentTasks) => updateTask(currentTasks, taskIdToEdit, input))
+    setTaskIdToEdit(null)
   }
 
   return (
@@ -134,7 +169,7 @@ export const KanbanBoard = () => {
             </Button>
             <Button
               className="max-[520px]:h-9 max-[520px]:px-2 max-[520px]:text-xs"
-              onClick={() => setCreateTaskStatus('backlog')}
+              onClick={handleCreateBacklogTask}
             >
               <PlusIcon />
               Новая задача
@@ -144,10 +179,10 @@ export const KanbanBoard = () => {
       </header>
 
       {createTaskStatus !== null && (
-        <CreateTaskDialog onClose={() => setCreateTaskStatus(null)}>
+        <CreateTaskDialog onClose={handleCloseCreateTask}>
           <CreateTaskForm
             onSubmit={handleCreateTask}
-            onCancel={() => setCreateTaskStatus(null)}
+            onCancel={handleCloseCreateTask}
             initialStatus={createTaskStatus}
           />
         </CreateTaskDialog>
@@ -157,7 +192,7 @@ export const KanbanBoard = () => {
         <DeleteTaskDialog
           taskTitle={taskToDelete.title}
           onConfirm={handleConfirmDelete}
-          onCancel={() => setTaskIdToDelete(null)}
+          onCancel={handleCancelDelete}
         />
       )}
 
@@ -179,11 +214,22 @@ export const KanbanBoard = () => {
                 title={column.title}
                 onAddTask={() => setCreateTaskStatus(column.id)}
                 onDeleteRequest={handleDeleteRequest}
+                onEditRequest={handleEditRequest}
               />
             )
           })}
         </div>
       </div>
+
+      {taskToEdit !== null && (
+        <EditTaskDialog onClose={handleCloseEdit}>
+          <EditTaskForm
+            task={taskToEdit}
+            onSubmit={handleEditTask}
+            onCancel={handleCloseEdit}
+          />
+        </EditTaskDialog>
+      )}
     </section>
   )
 }

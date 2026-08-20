@@ -69,7 +69,9 @@ describe('KanbanBoard', () => {
       }),
     )
 
-    expect(screen.getByRole('dialog')).toBeInTheDocument()
+    const dialog = screen.getByRole('dialog')
+
+    expect(dialog).toBeInTheDocument()
 
     await user.type(
       screen.getByRole('textbox', {
@@ -250,5 +252,115 @@ describe('KanbanBoard', () => {
     ).not.toBeInTheDocument()
 
     expect(screen.getByText(/7 задач/)).toBeInTheDocument()
+  })
+
+  test('редактирует задачу и закрывает диалог', async () => {
+    const { user } = setup()
+
+    await user.click(
+      screen.getByRole('button', {
+        name: 'Редактировать задачу Исследовать конкурентов',
+      }),
+    )
+
+    const dialog = screen.getByRole('dialog')
+
+    const titleInput = within(dialog).getByRole('textbox', {
+      name: /Название задачи/,
+    })
+
+    expect(titleInput).toHaveValue('Исследовать конкурентов')
+
+    await user.clear(titleInput)
+
+    await user.type(titleInput, 'Подготовить документацию')
+
+    await user.click(within(dialog).getByRole('button', { name: 'Сохранить' }))
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+
+    expect(
+      screen.getByRole('link', {
+        name: 'Подготовить документацию',
+      }),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.queryByRole('link', {
+        name: 'Исследовать конкурентов',
+      }),
+    ).not.toBeInTheDocument()
+  })
+
+  test('не сохраняет изменения после отмены редактирования', async () => {
+    const { user } = setup()
+
+    await user.click(
+      screen.getByRole('button', {
+        name: 'Редактировать задачу Исследовать конкурентов',
+      }),
+    )
+
+    const dialog = screen.getByRole('dialog')
+
+    const titleInput = within(dialog).getByRole('textbox', {
+      name: /Название задачи/,
+    })
+
+    expect(titleInput).toHaveValue('Исследовать конкурентов')
+
+    await user.clear(titleInput)
+
+    await user.type(titleInput, 'Подготовить документацию')
+
+    await user.click(within(dialog).getByRole('button', { name: 'Отмена' }))
+
+    expect(dialog).not.toBeInTheDocument()
+
+    expect(
+      screen.getByRole('link', {
+        name: 'Исследовать конкурентов',
+      }),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.queryByRole('link', {
+        name: 'Подготовить документацию',
+      }),
+    ).not.toBeInTheDocument()
+  })
+
+  test('не сохраняет задачу с пустым названием', async () => {
+    const { user } = setup()
+
+    await user.click(
+      screen.getByRole('button', {
+        name: 'Редактировать задачу Исследовать конкурентов',
+      }),
+    )
+
+    const dialog = screen.getByRole('dialog')
+
+    const titleInput = within(dialog).getByRole('textbox', {
+      name: /Название задачи/,
+    })
+
+    expect(titleInput).toHaveValue('Исследовать конкурентов')
+
+    await user.clear(titleInput)
+
+    await user.click(within(dialog).getByRole('button', { name: 'Сохранить' }))
+
+    expect(
+      await within(dialog).findByText('Введите название задачи'),
+    ).toBeInTheDocument()
+
+    expect(dialog).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('link', {
+        name: 'Исследовать конкурентов',
+      }),
+    ).toBeInTheDocument()
   })
 })
