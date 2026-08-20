@@ -27,14 +27,14 @@ interface SelectProps
   containerClassName?: string
 }
 
-export function Select({
+export const Select = ({
   children,
   className,
   containerClassName,
   disabled,
   size,
   ...props
-}: SelectProps) {
+}: SelectProps) => {
   return (
     <span className={cn('relative inline-flex', containerClassName)}>
       <select

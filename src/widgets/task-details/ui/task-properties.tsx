@@ -4,7 +4,7 @@ import { priorityLabels, statusLabels, type Task } from '@/src/entities/task'
 import { formatDeadline } from '@/src/shared/lib'
 import { Button, Card, Progress } from '@/src/shared/ui'
 
-export function TaskProperties({ task }: { task: Task }) {
+export const TaskProperties = ({ task }: { task: Task }) => {
   const properties = [
     ['Исполнитель', task.assignee],
     ['Пространство', task.space],

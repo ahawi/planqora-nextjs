@@ -36,7 +36,7 @@ const navigation = [
   },
 ]
 
-export function AppSidebar() {
+export const AppSidebar = () => {
   const pathname = usePathname()
 
   return (

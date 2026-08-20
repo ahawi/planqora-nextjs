@@ -16,7 +16,7 @@ const toneClasses: Record<Space['tone'], string> = {
   warning: 'bg-warning-600',
 }
 
-export function SpaceCard({ space }: { space: Space }) {
+export const SpaceCard = ({ space }: { space: Space }) => {
   return (
     <Card className="snap-start p-5 transition [@media(max-height:950px)]:p-3 hover:-translate-y-0.5 hover:shadow-lg">
       <CardHeader>

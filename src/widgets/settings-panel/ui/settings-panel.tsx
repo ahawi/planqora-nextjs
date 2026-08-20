@@ -8,7 +8,7 @@ import { SettingsHeader } from './settings-header'
 
 type SettingsTab = 'general' | 'notifications'
 
-export function SettingsPanel() {
+export const SettingsPanel = () => {
   const [activeTab, setActiveTab] = useState<SettingsTab>('general')
 
   return (

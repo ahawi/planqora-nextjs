@@ -12,7 +12,7 @@ import { type TaskSort, useTaskFilters } from '@/src/features/task-filters'
 import { Chip, EmptyState, SectionHeading, Select } from '@/src/shared/ui'
 import { DashboardHeader } from '@/src/widgets/dashboard-header'
 
-function TaskGrid({ tasks }: { tasks: typeof tasksMock }) {
+const TaskGrid = ({ tasks }: { tasks: typeof tasksMock }) => {
   return (
     <div className="grid grid-cols-3 gap-5 max-[1180px]:grid-cols-2 max-[620px]:grid-cols-1">
       {tasks.map((task) => (
@@ -22,7 +22,7 @@ function TaskGrid({ tasks }: { tasks: typeof tasksMock }) {
   )
 }
 
-export function TaskExplorer() {
+export const TaskExplorer = () => {
   const {
     searchQuery,
     setSearchQuery,

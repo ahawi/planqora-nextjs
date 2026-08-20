@@ -4,7 +4,7 @@ import { TaskContent } from './task-content'
 import { TaskDetailsHeader } from './task-details-header'
 import { TaskProperties } from './task-properties'
 
-export function TaskDetails({ task }: { task: Task }) {
+export const TaskDetails = ({ task }: { task: Task }) => {
   return (
     <section className="flex h-full min-h-0 flex-col overflow-hidden">
       <TaskDetailsHeader task={task} />

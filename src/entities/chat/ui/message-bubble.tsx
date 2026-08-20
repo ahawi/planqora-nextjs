@@ -2,7 +2,7 @@ import Image from 'next/image'
 
 import type { ChatMessage } from '../model/types'
 
-export function MessageBubble({ message }: { message: ChatMessage }) {
+export const MessageBubble = ({ message }: { message: ChatMessage }) => {
   const outgoing = message.direction === 'outgoing'
 
   return (

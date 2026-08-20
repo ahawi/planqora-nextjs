@@ -2,10 +2,10 @@ import type { HTMLAttributes } from 'react'
 
 import { cn } from '@/src/shared/lib'
 
-export function Skeleton({
+export const Skeleton = ({
   className,
   ...props
-}: HTMLAttributes<HTMLSpanElement>) {
+}: HTMLAttributes<HTMLSpanElement>) => {
   return (
     <span
       className={cn(

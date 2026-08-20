@@ -3,7 +3,7 @@ import Image from 'next/image'
 
 import { Button } from '@/src/shared/ui'
 
-export function SettingsHeader() {
+export const SettingsHeader = () => {
   return (
     <header className="flex min-h-28 shrink-0 items-center justify-between border-b border-border bg-primary-0 px-9 max-[860px]:min-h-32 max-[860px]:items-end max-[860px]:border-b-0 max-[860px]:px-7 max-[860px]:pb-7">
       <h1 className="text-2xl font-bold text-secondary-500">Настройки</h1>

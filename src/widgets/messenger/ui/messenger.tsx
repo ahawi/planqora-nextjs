@@ -18,7 +18,7 @@ import { Button } from '@/src/shared/ui/button'
 
 const activeConversation = conversationsMock[0]
 
-export function Messenger() {
+export const Messenger = () => {
   return (
     <section className="flex h-full min-h-0 flex-col overflow-hidden bg-primary-0">
       <header className="flex min-h-28 shrink-0 items-center justify-between border-b border-border px-8 max-[860px]:min-h-32 max-[860px]:items-end max-[860px]:border-b-0 max-[860px]:px-7 max-[860px]:pb-7">

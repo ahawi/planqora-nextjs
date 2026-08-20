@@ -7,14 +7,16 @@ export const metadata: Metadata = {
   description: 'Planqora — управление проектами, пространствами и задачами',
 }
 
-export default function RootLayout({
+const RootLayout = ({
   children,
 }: Readonly<{
   children: React.ReactNode
-}>) {
+}>) => {
   return (
     <html lang="ru">
       <body>{children}</body>
     </html>
   )
 }
+
+export default RootLayout

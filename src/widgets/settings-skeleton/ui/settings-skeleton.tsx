@@ -1,6 +1,6 @@
 import { Skeleton } from '@/src/shared/ui'
 
-function FieldSkeleton() {
+const FieldSkeleton = () => {
   return (
     <div>
       <Skeleton className="mb-3 h-4 w-36" />
@@ -12,7 +12,7 @@ function FieldSkeleton() {
   )
 }
 
-export function SettingsSkeleton() {
+export const SettingsSkeleton = () => {
   return (
     <section
       aria-label="Загружаем настройки"

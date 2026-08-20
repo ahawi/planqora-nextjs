@@ -7,9 +7,7 @@ interface TaskDetailsPageProps {
   params: Promise<{ taskId: string }>
 }
 
-export default async function TaskDetailsPage({
-  params,
-}: TaskDetailsPageProps) {
+const TaskDetailsPage = async ({ params }: TaskDetailsPageProps) => {
   const { taskId } = await params
 
   const task = tasksMock.find((task) => task.id === taskId)
@@ -18,3 +16,5 @@ export default async function TaskDetailsPage({
 
   return <TaskDetails task={task} />
 }
+
+export default TaskDetailsPage

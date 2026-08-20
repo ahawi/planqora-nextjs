@@ -4,11 +4,16 @@ import { describe, expect, test } from 'vitest'
 
 import { KanbanBoard } from './kanban-board'
 
+const setup = () => {
+  const user = userEvent.setup()
+
+  render(<KanbanBoard />)
+
+  return { user }
+}
 describe('KanbanBoard', () => {
   test('перемещает задачу в следующую колонку', async () => {
-    const user = userEvent.setup()
-
-    render(<KanbanBoard />)
+    const { user } = setup()
 
     const backlogHeading = screen.getByRole('heading', {
       name: 'Бэклог',
@@ -56,9 +61,7 @@ describe('KanbanBoard', () => {
   })
 
   test('создаёт новую задачу и закрывает диалог', async () => {
-    const user = userEvent.setup()
-
-    render(<KanbanBoard />)
+    const { user } = setup()
 
     await user.click(
       screen.getByRole('button', {
@@ -103,9 +106,7 @@ describe('KanbanBoard', () => {
   })
 
   test('показывает ошибки и не закрывает диалог при пустой форме', async () => {
-    const user = userEvent.setup()
-
-    render(<KanbanBoard />)
+    const { user } = setup()
 
     await user.click(
       screen.getByRole('button', {
@@ -133,9 +134,7 @@ describe('KanbanBoard', () => {
   })
 
   test('создаёт задачу в выбранной колонке', async () => {
-    const user = userEvent.setup()
-
-    render(<KanbanBoard />)
+    const { user } = setup()
 
     const todoHeading = screen.getByRole('heading', {
       name: 'К выполнению',
@@ -197,5 +196,59 @@ describe('KanbanBoard', () => {
         name: 'Проверить макеты',
       }),
     ).not.toBeInTheDocument()
+  })
+
+  test('не удаляет задачу после отмены', async () => {
+    const { user } = setup()
+
+    await user.click(
+      screen.getByRole('button', {
+        name: 'Удалить задачу Исследовать конкурентов',
+      }),
+    )
+
+    const dialog = screen.getByRole('alertdialog')
+
+    expect(
+      within(dialog).getByText('"Исследовать конкурентов"'),
+    ).toBeInTheDocument()
+
+    await user.click(within(dialog).getByRole('button', { name: 'Отмена' }))
+
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
+
+    expect(
+      screen.getByRole('link', {
+        name: 'Исследовать конкурентов',
+      }),
+    ).toBeInTheDocument()
+  })
+
+  test('подтверждение удаления закрывает диалог и убирает карточку из колонки', async () => {
+    const { user } = setup()
+
+    await user.click(
+      screen.getByRole('button', {
+        name: 'Удалить задачу Исследовать конкурентов',
+      }),
+    )
+
+    const dialog = screen.getByRole('alertdialog')
+
+    expect(
+      within(dialog).getByText('"Исследовать конкурентов"'),
+    ).toBeInTheDocument()
+
+    await user.click(within(dialog).getByRole('button', { name: 'Удалить' }))
+
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
+
+    expect(
+      screen.queryByRole('link', {
+        name: 'Исследовать конкурентов',
+      }),
+    ).not.toBeInTheDocument()
+
+    expect(screen.getByText(/7 задач/)).toBeInTheDocument()
   })
 })

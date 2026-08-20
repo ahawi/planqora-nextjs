@@ -15,7 +15,7 @@ const defaultItems: AvatarItem[] = [
   { initials: 'МИ', color: 'bg-success-700' },
 ]
 
-export function AvatarGroup({ items = defaultItems }: AvatarGroupProps) {
+export const AvatarGroup = ({ items = defaultItems }: AvatarGroupProps) => {
   return (
     <div className="flex pl-2" aria-label={`${items.length} участника`}>
       {items.map(({ color, initials }) => (

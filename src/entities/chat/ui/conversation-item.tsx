@@ -2,13 +2,13 @@ import Image from 'next/image'
 
 import type { Conversation } from '../model/types'
 
-export function ConversationItem({
+export const ConversationItem = ({
   active = false,
   conversation,
 }: {
   active?: boolean
   conversation: Conversation
-}) {
+}) => {
   return (
     <article
       className={`flex min-w-0 items-center gap-3 rounded-xl p-3 transition-colors ${active ? 'bg-surface-subtle' : 'hover:bg-surface-muted'} max-[860px]:w-full max-[860px]:rounded-none max-[860px]:border-b max-[860px]:border-border max-[860px]:px-2 max-[860px]:py-5`}

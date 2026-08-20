@@ -8,7 +8,7 @@ import {
 import type { Task } from '@/src/entities/task'
 import { Button } from '@/src/shared/ui'
 
-export function TaskDetailsHeader({ task }: { task: Task }) {
+export const TaskDetailsHeader = ({ task }: { task: Task }) => {
   return (
     <header className="shrink-0 bg-primary-0 px-[clamp(20px,3vw,36px)] pb-7 pt-[clamp(26px,3vw,38px)] max-[860px]:px-[clamp(20px,7vw,32px)]">
       <div className="mb-8 flex items-center justify-between gap-5">

@@ -1,6 +1,6 @@
 import { Card, Skeleton } from '@/src/shared/ui'
 
-function UserActionsSkeleton() {
+const UserActionsSkeleton = () => {
   return (
     <div className="flex gap-3 max-[860px]:hidden">
       <Skeleton className="size-10" />
@@ -9,7 +9,7 @@ function UserActionsSkeleton() {
   )
 }
 
-function PageHeadingSkeleton({ className = '' }: { className?: string }) {
+const PageHeadingSkeleton = ({ className = '' }: { className?: string }) => {
   return (
     <div className={`flex items-center justify-between gap-6 ${className}`}>
       <div>
@@ -21,7 +21,7 @@ function PageHeadingSkeleton({ className = '' }: { className?: string }) {
   )
 }
 
-function TaskCardSkeleton() {
+const TaskCardSkeleton = () => {
   return (
     <Card className="snap-start p-3.5 [@media(max-height:950px)]:p-2.5">
       <Skeleton className="h-[clamp(125px,38vw,170px)] rounded-[14px] bg-primary-100 min-[861px]:h-[116px] [@media(max-height:950px)]:h-20" />
@@ -42,7 +42,7 @@ function TaskCardSkeleton() {
   )
 }
 
-function SpaceCardSkeleton() {
+const SpaceCardSkeleton = () => {
   return (
     <Card className="snap-start p-5 [@media(max-height:950px)]:p-3">
       <div className="flex items-start justify-between gap-4">
@@ -60,7 +60,7 @@ function SpaceCardSkeleton() {
   )
 }
 
-function OverviewAsideSkeleton() {
+const OverviewAsideSkeleton = () => {
   return (
     <aside className="min-w-0 overflow-hidden bg-surface-muted px-7 py-[38px] max-[1180px]:grid max-[1180px]:grid-cols-[1fr_1.3fr] max-[1180px]:gap-5 max-[1180px]:bg-primary-0 max-[1180px]:pt-0 max-[860px]:grid-cols-1 max-[860px]:gap-7 max-[860px]:bg-surface-subtle max-[860px]:px-[clamp(20px,7vw,32px)] max-[860px]:py-6">
       <Card className="border-0 px-5 pb-5 pt-6">
@@ -107,7 +107,7 @@ function OverviewAsideSkeleton() {
   )
 }
 
-export function OverviewRouteSkeleton() {
+export const OverviewRouteSkeleton = () => {
   return (
     <div
       className="grid h-full min-h-0 grid-cols-[minmax(0,1fr)_360px] overflow-hidden max-[1180px]:block"
@@ -166,7 +166,7 @@ export function OverviewRouteSkeleton() {
   )
 }
 
-export function TasksRouteSkeleton() {
+export const TasksRouteSkeleton = () => {
   return (
     <section
       className="flex h-full min-h-0 flex-col overflow-hidden"
@@ -200,7 +200,7 @@ export function TasksRouteSkeleton() {
   )
 }
 
-function KanbanColumnSkeleton({ count }: { count: number }) {
+const KanbanColumnSkeleton = ({ count }: { count: number }) => {
   return (
     <section className="flex min-h-[610px] w-[290px] shrink-0 flex-col rounded-2xl border border-border bg-surface-muted p-3 min-[1280px]:w-auto min-[1280px]:min-w-0">
       <header className="mb-3 flex items-center justify-between px-1 py-1">
@@ -228,7 +228,7 @@ function KanbanColumnSkeleton({ count }: { count: number }) {
   )
 }
 
-export function SpaceRouteSkeleton() {
+export const SpaceRouteSkeleton = () => {
   return (
     <section
       className="flex h-full min-h-0 flex-col overflow-hidden"

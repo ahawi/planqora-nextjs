@@ -5,7 +5,7 @@ interface ProgressProps {
   value: number
 }
 
-export function Progress({ className, value }: ProgressProps) {
+export const Progress = ({ className, value }: ProgressProps) => {
   const normalizedValue = Math.min(100, Math.max(0, value))
 
   return (
