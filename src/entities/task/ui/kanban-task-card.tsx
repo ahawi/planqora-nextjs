@@ -1,6 +1,7 @@
 import {
   CalendarDaysIcon,
   ChatBubbleOvalLeftIcon,
+  PencilSquareIcon,
   TrashIcon,
 } from '@heroicons/react/24/outline'
 import Link from 'next/link'
@@ -22,11 +23,13 @@ const priorityStyles: Record<
 interface KanbanTaskCardProps {
   task: Task
   onDeleteRequest: (taskId: string) => void
+  onEditRequest: (taskId: string) => void
 }
 
 export const KanbanTaskCard = ({
   task,
   onDeleteRequest,
+  onEditRequest,
 }: KanbanTaskCardProps) => {
   const priority = priorityStyles[task.priority]
 
@@ -42,16 +45,28 @@ export const KanbanTaskCard = ({
             {task.title}
           </Link>
         </h3>
-        <Button
-          aria-label={`Удалить задачу ${task.title}`}
-          className="-mr-2 -mt-2"
-          iconOnly
-          size="sm"
-          variant="minimal"
-          onClick={() => handleDeleteRequest(task.id)}
-        >
-          <TrashIcon />
-        </Button>
+        <div className="-mr-2 -mt-2 flex shrink-0">
+          <Button
+            aria-label={`Редактировать задачу ${task.title}`}
+            iconOnly
+            size="sm"
+            type="button"
+            variant="minimal"
+            onClick={() => onEditRequest(task.id)}
+          >
+            <PencilSquareIcon />
+          </Button>
+          <Button
+            aria-label={`Удалить задачу ${task.title}`}
+            iconOnly
+            size="sm"
+            type="button"
+            variant="minimal"
+            onClick={() => handleDeleteRequest(task.id)}
+          >
+            <TrashIcon />
+          </Button>
+        </div>
       </div>
       <span
         className={`mt-3 inline-flex rounded-lg px-2 py-1 text-[10px] font-bold max-[520px]:mt-2 ${priority.style}`}
