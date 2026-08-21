@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import type { Task } from '@/src/entities/task'
+import { useDebounce } from '@/src/shared/lib'
 
 import { filterTasks } from './filter-tasks'
 import { sortTasks, type TaskSort } from './sort-tasks'
@@ -12,8 +13,10 @@ export const useTaskFilters = (tasks: Task[]) => {
   )
   const [sortOrder, setSortOrder] = useState<TaskSort>('default')
 
+  const debouncedSearchQuery = useDebounce(searchQuery, 300)
+
   const filteredTasks = filterTasks(tasks, {
-    searchQuery,
+    searchQuery: debouncedSearchQuery,
     selectedCategories,
   })
 

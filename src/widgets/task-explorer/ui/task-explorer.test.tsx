@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, test } from 'vitest'
 
@@ -22,11 +22,13 @@ describe('TaskExplorer', () => {
       }),
     ).toBeInTheDocument()
 
-    expect(
-      screen.queryByRole('link', {
-        name: 'Настроить авторизацию',
-      }),
-    ).not.toBeInTheDocument()
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('link', {
+          name: 'Настроить авторизацию',
+        }),
+      ).not.toBeInTheDocument()
+    })
   })
 
   test('можно выбрать несколько категорий', async () => {
@@ -124,7 +126,7 @@ describe('TaskExplorer', () => {
       'несуществующая задача',
     )
 
-    const emptyState = screen.getByRole('status')
+    const emptyState = await screen.findByRole('status')
 
     expect(
       within(emptyState).getByRole('heading', {

@@ -6,7 +6,7 @@ import {
   PlusIcon,
   UserGroupIcon,
 } from '@heroicons/react/24/outline'
-import { useState } from 'react'
+import { type ChangeEvent, useState } from 'react'
 
 import {
   deleteTask,
@@ -28,6 +28,7 @@ import {
   EditTaskForm,
   type EditTaskInput,
 } from '@/src/features/edit-task'
+import { useTaskFilters } from '@/src/features/task-filters'
 import { Button, Progress } from '@/src/shared/ui'
 
 import { columns } from '../model/columns'
@@ -40,9 +41,12 @@ export const KanbanBoard = () => {
   >(null)
   const [taskIdToDelete, setTaskIdToDelete] = useState<string | null>(null)
   const [taskIdToEdit, setTaskIdToEdit] = useState<string | null>(null)
+  const [searchOpen, setSearchOpen] = useState<boolean>(false)
 
   const taskToDelete = tasks.find((task) => task.id === taskIdToDelete) ?? null
   const taskToEdit = tasks.find((task) => task.id === taskIdToEdit) ?? null
+
+  const { searchQuery, setSearchQuery, visibleTasks } = useTaskFilters(tasks)
 
   const handleTaskStatusChange = (
     taskId: string,
@@ -101,6 +105,17 @@ export const KanbanBoard = () => {
     setTaskIdToEdit(null)
   }
 
+  const handleSearchInput = (event: ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value)
+  }
+
+  const handleSearchToggle = () => {
+    if (searchOpen) {
+      setSearchQuery('')
+    }
+    setSearchOpen((currentValue) => !currentValue)
+  }
+
   return (
     <section className="flex h-full min-h-0 flex-col overflow-hidden">
       <header className="shrink-0 border-b border-border px-[clamp(20px,3vw,36px)] py-5 max-[860px]:px-[clamp(20px,7vw,32px)] max-[520px]:px-4 max-[520px]:py-3.5">
@@ -116,6 +131,9 @@ export const KanbanBoard = () => {
           <label className="flex h-10 w-[310px] items-center gap-2 rounded-xl border border-border px-3 text-secondary-300 max-[700px]:hidden">
             <MagnifyingGlassIcon className="size-5" />
             <input
+              value={searchQuery}
+              onChange={handleSearchInput}
+              aria-label="Поиск задач"
               className="w-full border-0 bg-transparent p-0 text-sm outline-none ring-0 placeholder:text-secondary-300 focus:ring-0"
               placeholder="Поиск"
               type="search"
@@ -147,7 +165,10 @@ export const KanbanBoard = () => {
           </div>
           <div className="flex flex-wrap gap-2 max-[520px]:grid max-[520px]:w-full max-[520px]:grid-cols-2">
             <Button
-              className="max-[520px]:h-9 max-[520px]:px-2 max-[520px]:text-xs"
+              aria-controls="kanban-search-panel"
+              aria-expanded={searchOpen}
+              className="max-[520px]:h-9 max-[520px]:px-2 max-[520px]:text-xs min-[701px]:hidden"
+              onClick={handleSearchToggle}
               variant="secondary"
             >
               <MagnifyingGlassIcon />
@@ -176,6 +197,24 @@ export const KanbanBoard = () => {
             </Button>
           </div>
         </div>
+
+        {searchOpen && (
+          <label
+            className="mt-4 hidden h-11 w-full items-center gap-3 rounded-xl border-2 border-primary-200 bg-primary-0 px-3 text-secondary-300 transition-colors focus-within:border-primary-500 focus-within:ring-4 focus-within:ring-primary-100 max-[700px]:flex max-[520px]:mt-3"
+            id="kanban-search-panel"
+          >
+            <MagnifyingGlassIcon className="size-5 shrink-0" />
+            <input
+              autoFocus
+              aria-label="Мобильный поиск задач"
+              className="min-w-0 flex-1 border-0 bg-transparent p-0 text-sm text-secondary-500 outline-none placeholder:text-secondary-300"
+              onChange={handleSearchInput}
+              placeholder="Найти задачу"
+              type="search"
+              value={searchQuery}
+            />
+          </label>
+        )}
       </header>
 
       {createTaskStatus !== null && (
@@ -201,7 +240,7 @@ export const KanbanBoard = () => {
           {columns.map((column, idx) => {
             const nextStatus = columns[idx + 1]?.id
 
-            const columnTasks = tasks.filter(
+            const columnTasks = visibleTasks.filter(
               (task) => task.status === column.id,
             )
 
