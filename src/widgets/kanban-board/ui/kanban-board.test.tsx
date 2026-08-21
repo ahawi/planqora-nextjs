@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, test } from 'vitest'
 
@@ -362,5 +362,100 @@ describe('KanbanBoard', () => {
         name: 'Исследовать конкурентов',
       }),
     ).toBeInTheDocument()
+  })
+
+  test('фильтрует задачи по поисковому запросу', async () => {
+    const { user } = setup()
+
+    const searchInput = screen.getByRole('searchbox', {
+      name: 'Поиск задач',
+    })
+
+    await user.type(searchInput, 'Исследовать конкурентов')
+
+    expect(
+      screen.getByRole('link', {
+        name: 'Исследовать конкурентов',
+      }),
+    ).toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('link', {
+          name: 'Собрать UI-kit проекта',
+        }),
+      ).not.toBeInTheDocument()
+    })
+
+    await user.clear(searchInput)
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('link', {
+          name: 'Собрать UI-kit проекта',
+        }),
+      ).toBeInTheDocument()
+    })
+  })
+
+  test('открывает и закрывает мобильный поиск', async () => {
+    const { user } = setup()
+
+    const searchButton = screen.getByRole('button', {
+      name: 'Поиск',
+    })
+
+    expect(searchButton).toHaveAttribute('aria-expanded', 'false')
+    expect(searchButton).toHaveAttribute('aria-controls', 'kanban-search-panel')
+
+    expect(
+      screen.queryByRole('searchbox', {
+        name: 'Мобильный поиск задач',
+      }),
+    ).not.toBeInTheDocument()
+
+    await user.click(searchButton)
+
+    expect(searchButton).toHaveAttribute('aria-expanded', 'true')
+
+    const mobileSearchInput = screen.getByRole('searchbox', {
+      name: 'Мобильный поиск задач',
+    })
+
+    expect(mobileSearchInput).toBeInTheDocument()
+
+    await user.type(mobileSearchInput, 'Исследовать конкурентов')
+
+    expect(
+      screen.getByRole('link', {
+        name: 'Исследовать конкурентов',
+      }),
+    ).toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('link', {
+          name: 'Собрать UI-kit проекта',
+        }),
+      ).not.toBeInTheDocument()
+    })
+
+    await user.click(searchButton)
+
+    expect(searchButton).toHaveAttribute('aria-expanded', 'false')
+
+    expect(
+      screen.queryByRole('searchbox', {
+        name: 'Мобильный поиск задач',
+      }),
+    ).not.toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('link', {
+          name: 'Собрать UI-kit проекта',
+        }),
+      ).toBeInTheDocument()
+    })
   })
 })
