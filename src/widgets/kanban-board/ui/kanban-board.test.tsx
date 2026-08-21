@@ -458,4 +458,161 @@ describe('KanbanBoard', () => {
       ).toBeInTheDocument()
     })
   })
+
+  test('фильтрует задачи по выбранной категории', async () => {
+    const { user } = setup()
+
+    const filtersButton = screen.getByRole('button', {
+      name: 'Фильтры',
+    })
+
+    expect(filtersButton).toHaveAttribute('aria-expanded', 'false')
+    expect(filtersButton).toHaveAttribute(
+      'aria-controls',
+      'kanban-filters-panel',
+    )
+
+    await user.click(filtersButton)
+
+    expect(filtersButton).toHaveAttribute('aria-expanded', 'true')
+
+    const categorySelect = screen.getByRole('combobox', {
+      name: 'Добавить категорию',
+    })
+
+    await user.selectOptions(categorySelect, 'Исследование')
+
+    const selectedCategories = screen.getByLabelText(
+      'Выбранные категории Kanban',
+    )
+
+    expect(
+      within(selectedCategories).getByText('Исследование'),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('link', {
+        name: 'Исследовать конкурентов',
+      }),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('link', {
+        name: 'Анализ текущего сайта',
+      }),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.queryByRole('link', {
+        name: 'Собрать UI-kit проекта',
+      }),
+    ).not.toBeInTheDocument()
+  })
+
+  test('удаляет выбранную категорию и сбрасывает фильтрацию', async () => {
+    const { user } = setup()
+
+    await user.click(
+      screen.getByRole('button', {
+        name: 'Фильтры',
+      }),
+    )
+
+    await user.selectOptions(
+      screen.getByRole('combobox', {
+        name: 'Добавить категорию',
+      }),
+      'Исследование',
+    )
+
+    expect(
+      screen.queryByRole('link', {
+        name: 'Собрать UI-kit проекта',
+      }),
+    ).not.toBeInTheDocument()
+
+    const selectedCategories = screen.getByLabelText(
+      'Выбранные категории Kanban',
+    )
+
+    await user.click(
+      screen.getByRole('button', {
+        name: 'Удалить категорию Исследование',
+      }),
+    )
+
+    expect(
+      within(selectedCategories).queryByText('Исследование'),
+    ).not.toBeInTheDocument()
+
+    expect(
+      within(selectedCategories).getByText('Фильтры не выбраны'),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('link', {
+        name: 'Собрать UI-kit проекта',
+      }),
+    ).toBeInTheDocument()
+  })
+
+  test('сбрасывает все выбранные категории', async () => {
+    const { user } = setup()
+
+    await user.click(
+      screen.getByRole('button', {
+        name: 'Фильтры',
+      }),
+    )
+
+    const categorySelect = screen.getByRole('combobox', {
+      name: 'Добавить категорию',
+    })
+
+    await user.selectOptions(categorySelect, 'Исследование')
+    await user.selectOptions(categorySelect, 'Дизайн')
+
+    const selectedCategories = screen.getByLabelText(
+      'Выбранные категории Kanban',
+    )
+    const resetButton = screen.getByRole('button', {
+      name: 'Сбросить все',
+    })
+
+    expect(
+      within(selectedCategories).getByText('Исследование'),
+    ).toBeInTheDocument()
+
+    expect(within(selectedCategories).getByText('Дизайн')).toBeInTheDocument()
+
+    expect(resetButton).toBeEnabled()
+
+    expect(
+      screen.queryByRole('link', {
+        name: 'Настроить авторизацию',
+      }),
+    ).not.toBeInTheDocument()
+
+    await user.click(resetButton)
+
+    expect(
+      within(selectedCategories).queryByText('Исследование'),
+    ).not.toBeInTheDocument()
+
+    expect(
+      within(selectedCategories).queryByText('Дизайн'),
+    ).not.toBeInTheDocument()
+
+    expect(
+      within(selectedCategories).getByText('Фильтры не выбраны'),
+    ).toBeInTheDocument()
+
+    expect(resetButton).toBeDisabled()
+
+    expect(
+      screen.getByRole('link', {
+        name: 'Настроить авторизацию',
+      }),
+    ).toBeInTheDocument()
+  })
 })

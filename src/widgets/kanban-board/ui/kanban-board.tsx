@@ -29,7 +29,7 @@ import {
   type EditTaskInput,
 } from '@/src/features/edit-task'
 import { useTaskFilters } from '@/src/features/task-filters'
-import { Button, Progress } from '@/src/shared/ui'
+import { Button, Chip, Progress, Select } from '@/src/shared/ui'
 
 import { columns } from '../model/columns'
 import { KanbanColumn } from './kanban-column'
@@ -42,11 +42,19 @@ export const KanbanBoard = () => {
   const [taskIdToDelete, setTaskIdToDelete] = useState<string | null>(null)
   const [taskIdToEdit, setTaskIdToEdit] = useState<string | null>(null)
   const [searchOpen, setSearchOpen] = useState<boolean>(false)
+  const [filtersOpen, setFiltersOpen] = useState<boolean>(false)
 
   const taskToDelete = tasks.find((task) => task.id === taskIdToDelete) ?? null
   const taskToEdit = tasks.find((task) => task.id === taskIdToEdit) ?? null
 
-  const { searchQuery, setSearchQuery, visibleTasks } = useTaskFilters(tasks)
+  const {
+    searchQuery,
+    setSearchQuery,
+    visibleTasks,
+    selectedCategories,
+    addCategory,
+    removeCategory,
+  } = useTaskFilters(tasks)
 
   const handleTaskStatusChange = (
     taskId: string,
@@ -116,6 +124,22 @@ export const KanbanBoard = () => {
     setSearchOpen((currentValue) => !currentValue)
   }
 
+  const handleFiltersToggle = () => {
+    setFiltersOpen((currentValue) => !currentValue)
+  }
+
+  const handleChangeCategory = (event: ChangeEvent<HTMLSelectElement>) => {
+    addCategory(event.target.value)
+  }
+
+  const handleRemoveCategory = (category: Task['tag']) => {
+    removeCategory(category)
+  }
+
+  const handleRemoveAllCategories = () => {
+    selectedCategories.forEach((category) => removeCategory(category))
+  }
+
   return (
     <section className="flex h-full min-h-0 flex-col overflow-hidden">
       <header className="shrink-0 border-b border-border px-[clamp(20px,3vw,36px)] py-5 max-[860px]:px-[clamp(20px,7vw,32px)] max-[520px]:px-4 max-[520px]:py-3.5">
@@ -177,6 +201,9 @@ export const KanbanBoard = () => {
             <Button
               className="max-[520px]:h-9 max-[520px]:px-2 max-[520px]:text-xs"
               variant="secondary"
+              onClick={handleFiltersToggle}
+              aria-expanded={filtersOpen}
+              aria-controls="kanban-filters-panel"
             >
               <AdjustmentsHorizontalIcon />
               Фильтры
@@ -214,6 +241,86 @@ export const KanbanBoard = () => {
               value={searchQuery}
             />
           </label>
+        )}
+
+        {filtersOpen && (
+          <section
+            aria-labelledby="kanban-filters-title"
+            className="mt-4 grid gap-4 rounded-2xl border border-border bg-surface-muted p-4 max-[520px]:mt-3 max-[520px]:gap-3 max-[520px]:p-3"
+            id="kanban-filters-panel"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2
+                  className="text-sm font-bold text-secondary-500"
+                  id="kanban-filters-title"
+                >
+                  Фильтры задач
+                </h2>
+                <p className="mt-1 text-xs text-secondary-400">
+                  Выберите категории, которые хотите показать
+                </p>
+              </div>
+
+              <Button
+                disabled={selectedCategories.length === 0}
+                size="sm"
+                type="button"
+                variant="minimal"
+                onClick={handleRemoveAllCategories}
+              >
+                Сбросить все
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-[minmax(180px,240px)_1fr] items-end gap-4 max-[620px]:grid-cols-1 max-[620px]:items-stretch">
+              <label className="grid gap-2">
+                <span className="text-xs font-bold text-secondary-500">
+                  Категория
+                </span>
+                <Select
+                  value=""
+                  onChange={handleChangeCategory}
+                  aria-label="Добавить категорию"
+                  size="md"
+                >
+                  <option value="">Все категории</option>
+                  <option value="Дизайн">Дизайн</option>
+                  <option value="Разработка">Разработка</option>
+                  <option value="Исследование">Исследование</option>
+                  <option value="UX">UX</option>
+                  <option value="Вёрстка">Вёрстка</option>
+                </Select>
+              </label>
+
+              <div className="grid gap-2">
+                <span className="text-xs font-bold text-secondary-500">
+                  Выбрано
+                </span>
+                <div
+                  aria-label="Выбранные категории Kanban"
+                  aria-live="polite"
+                  className="flex min-h-10 flex-wrap items-center gap-2 rounded-xl border border-border bg-primary-0 px-3 py-1.5"
+                >
+                  {selectedCategories.length > 0 ? (
+                    selectedCategories.map((category) => (
+                      <Chip
+                        key={category}
+                        onRemove={() => handleRemoveCategory(category)}
+                        removeLabel={`Удалить категорию ${category}`}
+                      >
+                        {category}
+                      </Chip>
+                    ))
+                  ) : (
+                    <span className="text-xs text-secondary-300">
+                      Фильтры не выбраны
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </section>
         )}
       </header>
 
