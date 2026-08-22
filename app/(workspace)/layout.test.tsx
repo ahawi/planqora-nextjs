@@ -7,7 +7,7 @@ const { requireSessionMock } = vi.hoisted(() => ({
   requireSessionMock: vi.fn(),
 }))
 
-vi.mock('@/src/shared/lib/server/require-session', () => ({
+vi.mock('@/src/shared/lib/index.server', () => ({
   requireSession: requireSessionMock,
 }))
 
@@ -16,12 +16,16 @@ vi.mock('@/src/widgets/app-sidebar', () => ({
 }))
 
 vi.mock('@/src/widgets/dashboard-header', () => ({
-  MobileHeader: () => <header>Мобильная шапка</header>,
+  MobileHeader: ({ userName }: { userName: string }) => (
+    <header>Мобильная шапка {userName}</header>
+  ),
 }))
 
 describe('WorkspaceLayout', () => {
   beforeEach(() => {
-    requireSessionMock.mockResolvedValue({})
+    requireSessionMock.mockResolvedValue({
+      user: { name: 'Иван' },
+    })
   })
 
   test('проверяет сессию и показывает рабочую область', async () => {
@@ -32,6 +36,7 @@ describe('WorkspaceLayout', () => {
     render(layout)
 
     expect(requireSessionMock).toHaveBeenCalledOnce()
+    expect(screen.getByText('Мобильная шапка Иван')).toBeInTheDocument()
     expect(screen.getByText('Рабочая область')).toBeInTheDocument()
   })
 

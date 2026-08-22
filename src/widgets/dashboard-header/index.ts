@@ -1,1 +1,2 @@
-export { DashboardHeader, MobileHeader } from './ui/dashboard-header'
+export { DashboardHeader } from './ui/dashboard-header'
+export { MobileHeader } from './ui/mobile-header'
