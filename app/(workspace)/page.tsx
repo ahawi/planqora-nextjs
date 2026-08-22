@@ -1,4 +1,5 @@
 import { delay, ROUTE_SKELETON_DELAY } from '@/src/shared/lib'
+import { requireSession } from '@/src/shared/lib/index.server'
 import { DashboardAside } from '@/src/widgets/dashboard-aside'
 import { DashboardHeader } from '@/src/widgets/dashboard-header'
 import { DashboardLayout } from '@/src/widgets/dashboard-layout'
@@ -9,11 +10,13 @@ import { UpcomingTasks } from '@/src/widgets/upcoming-tasks'
 export const dynamic = 'force-dynamic'
 
 const Page = async () => {
+  const session = await requireSession()
+
   await delay(ROUTE_SKELETON_DELAY)
 
   return (
     <DashboardLayout aside={<DashboardAside />}>
-      <DashboardHeader />
+      <DashboardHeader userName={session.user.name} />
       <DashboardOverview />
       <SpacesSection />
       <UpcomingTasks />

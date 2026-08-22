@@ -4,11 +4,17 @@ import { describe, expect, test } from 'vitest'
 
 import { TaskExplorer } from './task-explorer'
 
+const setup = () => {
+  const user = userEvent.setup()
+
+  render(<TaskExplorer header={<header>Мои задачи</header>} />)
+
+  return { user }
+}
+
 describe('TaskExplorer', () => {
   test('фильтрует карточки при вводе поискового запроса', async () => {
-    const user = userEvent.setup()
-
-    render(<TaskExplorer />)
+    const { user } = setup()
 
     const searchInput = screen.getByRole('searchbox', {
       name: 'Поиск задачи',
@@ -32,9 +38,7 @@ describe('TaskExplorer', () => {
   })
 
   test('можно выбрать несколько категорий', async () => {
-    const user = userEvent.setup()
-
-    render(<TaskExplorer />)
+    const { user } = setup()
 
     const categorySelect = screen.getByRole('combobox', {
       name: 'Категория задачи',
@@ -62,9 +66,7 @@ describe('TaskExplorer', () => {
   })
 
   test('повторный выбор не создаёт второй чип', async () => {
-    const user = userEvent.setup()
-
-    render(<TaskExplorer />)
+    const { user } = setup()
 
     const categorySelect = screen.getByRole('combobox', {
       name: 'Категория задачи',
@@ -79,9 +81,7 @@ describe('TaskExplorer', () => {
   })
 
   test('удаление чипа возвращает задачи этой категории', async () => {
-    const user = userEvent.setup()
-
-    render(<TaskExplorer />)
+    const { user } = setup()
 
     const categorySelect = screen.getByRole('combobox', {
       name: 'Категория задачи',
@@ -115,9 +115,7 @@ describe('TaskExplorer', () => {
   })
 
   test('неизвестный запрос показывает пустое состояние', async () => {
-    const user = userEvent.setup()
-
-    render(<TaskExplorer />)
+    const { user } = setup()
 
     await user.type(
       screen.getByRole('searchbox', {
@@ -136,9 +134,7 @@ describe('TaskExplorer', () => {
   })
 
   test('после выбора сортировки показывает задачи с ближайшим дедлайном первыми', async () => {
-    const user = userEvent.setup()
-
-    render(<TaskExplorer />)
+    const { user } = setup()
 
     const sortSelect = screen.getByRole('combobox', {
       name: 'Сортировка задач',
