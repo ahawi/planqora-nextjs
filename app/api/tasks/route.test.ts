@@ -96,6 +96,7 @@ describe('GET /api/tasks', () => {
         status: true,
         priority: true,
         tag: true,
+        assignee: true,
         progress: true,
         commentsCount: true,
         space: {

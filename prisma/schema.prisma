@@ -32,6 +32,7 @@ model Task {
   status        TaskStatus   @default(BACKLOG)
   priority      TaskPriority @default(MEDIUM)
   tag           String       @default("")
+  assignee      String       @default("")
   progress      Int          @default(0)
   commentsCount Int          @default(0)
   createdAt     DateTime     @default(now())

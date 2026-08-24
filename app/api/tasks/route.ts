@@ -21,6 +21,7 @@ export const GET = async (request: Request) => {
         priority: true,
         tag: true,
         progress: true,
+        assignee: true,
         commentsCount: true,
         space: {
           select: {

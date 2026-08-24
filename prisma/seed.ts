@@ -37,6 +37,7 @@ const main = async () => {
     status: TaskStatus.TODO,
     priority: TaskPriority.HIGH,
     tag: 'Дизайн',
+    assignee: 'Иван',
     progress: 75,
     commentsCount: 3,
     spaceId: space.id,
