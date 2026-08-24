@@ -1,6 +1,12 @@
 export { formatTaskCount } from './lib/format-task-count'
 export { getTaskDueLabel } from './lib/get-task-due-label'
 export { mapTaskDTO } from './lib/map-task'
+export {
+  mapTaskPriorityFromPrisma,
+  mapTaskPriorityToPrisma,
+  mapTaskStatusFromPrisma,
+  mapTaskStatusToPrisma,
+} from './lib/map-task-enums'
 export { priorityLabels, statusLabels } from './model/constants'
 export { deleteTask } from './model/delete-task'
 export { tasksMock, upcomingTasksMock } from './model/mocks'
