@@ -4,3 +4,7 @@ export type CreateTaskInput = Pick<
   Task,
   'title' | 'deadline' | 'status' | 'priority' | 'tag' | 'assignee' | 'space'
 >
+
+export type CreateTaskRequest = Omit<CreateTaskInput, 'space'> & {
+  spaceId: string
+}
