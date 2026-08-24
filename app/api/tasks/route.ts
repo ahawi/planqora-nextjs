@@ -1,3 +1,4 @@
+import { mapTaskDTO } from '@/src/entities/task'
 import { auth } from '@/src/shared/lib/server/auth'
 import { prisma } from '@/src/shared/lib/server/prisma'
 
@@ -35,7 +36,9 @@ export const GET = async (request: Request) => {
       },
     })
 
-    return Response.json({ tasks })
+    const mappedTasks = tasks.map(mapTaskDTO)
+
+    return Response.json({ tasks: mappedTasks })
   } catch {
     return Response.json(
       {

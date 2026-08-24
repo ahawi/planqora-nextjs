@@ -49,22 +49,32 @@ describe('GET /api/tasks', () => {
     expect(findManyMock).not.toHaveBeenCalled()
   })
 
-  test('возвращает задачи текущего пользователя', async () => {
-    const deadline = new Date('2026-08-30T00:00:00.000Z')
+  test('возвращает 500 при ошибке базы данных', async () => {
+    findManyMock.mockRejectedValue(new Error('Database error'))
+
+    const response = await GET(createRequest())
+    const body = await response.json()
+
+    expect(response.status).toBe(500)
+    expect(body).toEqual({ error: 'Internal server error' })
+  })
+
+  test('возвращает преобразованные задачи текущего пользователя', async () => {
     const tasks = [
       {
-        id: 'task-1',
-        title: 'Собрать API',
-        deadline,
-        status: 'TODO',
-        priority: 'HIGH',
-        tag: 'Разработка',
-        progress: 50,
+        assignee: 'Иван',
         commentsCount: 2,
+        deadline: new Date('2026-08-30T00:00:00.000Z'),
+        id: 'task-1',
+        priority: 'HIGH',
+        progress: 50,
         space: {
           id: 'space-1',
           title: 'Редизайн сайта',
         },
+        status: 'TODO',
+        tag: 'Разработка',
+        title: 'Собрать API',
       },
     ]
 
@@ -77,12 +87,20 @@ describe('GET /api/tasks', () => {
     expect(body).toEqual({
       tasks: [
         {
-          ...tasks[0],
-          deadline: deadline.toISOString(),
+          assignee: 'Иван',
+          comments: 2,
+          coverTone: 'warning',
+          deadline: '2026-08-30',
+          id: 'task-1',
+          priority: 'high',
+          progress: 50,
+          space: 'Редизайн сайта',
+          status: 'todo',
+          tag: 'Разработка',
+          title: 'Собрать API',
         },
       ],
     })
-
     expect(findManyMock).toHaveBeenCalledWith({
       where: {
         space: {
@@ -96,8 +114,8 @@ describe('GET /api/tasks', () => {
         status: true,
         priority: true,
         tag: true,
-        assignee: true,
         progress: true,
+        assignee: true,
         commentsCount: true,
         space: {
           select: {
@@ -110,15 +128,5 @@ describe('GET /api/tasks', () => {
         createdAt: 'desc',
       },
     })
-  })
-
-  test('возвращает 500 при ошибке базы данных', async () => {
-    findManyMock.mockRejectedValue(new Error('Database error'))
-
-    const response = await GET(createRequest())
-    const body = await response.json()
-
-    expect(response.status).toBe(500)
-    expect(body).toEqual({ error: 'Internal server error' })
   })
 })
