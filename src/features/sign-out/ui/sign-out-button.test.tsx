@@ -59,7 +59,7 @@ describe('SignOutButton', () => {
     await user.click(screen.getByRole('button', { name: 'Выйти' }))
 
     expect(
-      await screen.findByRole('button', { name: 'Выходим...' }),
+      await screen.findByRole('button', { name: 'Выход...' }),
     ).toBeDisabled()
 
     await act(async () => {
