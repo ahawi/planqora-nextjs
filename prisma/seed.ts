@@ -4,6 +4,16 @@ import { TaskPriority, TaskStatus } from '@/src/generated/prisma/enums'
 import { prisma } from '@/src/shared/lib/server/prisma'
 
 const main = async () => {
+  const owner = await prisma.user.findUnique({
+    where: {
+      email: 'ivan@ivan.ru',
+    },
+  })
+
+  if (!owner) {
+    throw new Error('Пользователь не найден')
+  }
+
   const space = await prisma.space.upsert({
     where: {
       id: 'space-web-redesign',
@@ -11,11 +21,13 @@ const main = async () => {
     update: {
       title: 'Редизайн сайта',
       description: 'Дизайн и разработка',
+      ownerId: owner.id,
     },
     create: {
       id: 'space-web-redesign',
       title: 'Редизайн сайта',
       description: 'Дизайн и разработка',
+      ownerId: owner.id,
     },
   })
 
