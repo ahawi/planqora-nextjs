@@ -17,10 +17,10 @@ import {
   updateTaskStatus,
 } from '@/src/entities/task'
 import {
-  createTask,
   CreateTaskDialog,
   CreateTaskForm,
-  type CreateTaskInput,
+  type CreateTaskFormInput,
+  useCreateTaskMutation,
 } from '@/src/features/create-task'
 import { DeleteTaskDialog } from '@/src/features/delete-task'
 import {
@@ -34,7 +34,11 @@ import { Button, Chip, Progress, Select } from '@/src/shared/ui'
 import { columns } from '../model/columns'
 import { KanbanColumn } from './kanban-column'
 
-export const KanbanBoard = () => {
+interface KanbanBoardProps {
+  spaceId: string
+}
+
+export const KanbanBoard = ({ spaceId }: KanbanBoardProps) => {
   const [tasks, setTasks] = useState(tasksMock)
   const [createTaskStatus, setCreateTaskStatus] = useState<
     Task['status'] | null
@@ -43,6 +47,13 @@ export const KanbanBoard = () => {
   const [taskIdToEdit, setTaskIdToEdit] = useState<string | null>(null)
   const [searchOpen, setSearchOpen] = useState<boolean>(false)
   const [filtersOpen, setFiltersOpen] = useState<boolean>(false)
+
+  const [createTask, { error: createTaskError, reset: resetCreateTask }] =
+    useCreateTaskMutation()
+
+  const createTaskErrorMessage = createTaskError
+    ? 'Не удалось создать задачу. Попробуйте ещё раз.'
+    : null
 
   const taskToDelete = tasks.find((task) => task.id === taskIdToDelete) ?? null
   const taskToEdit = tasks.find((task) => task.id === taskIdToEdit) ?? null
@@ -65,14 +76,18 @@ export const KanbanBoard = () => {
     )
   }
 
-  const handleCreateTask = (input: CreateTaskInput) => {
-    const newTask = createTask(input, crypto.randomUUID())
+  const handleCreateTask = async (input: CreateTaskFormInput) => {
+    try {
+      const task = await createTask({
+        ...input,
+        spaceId,
+      }).unwrap()
 
-    setTasks((currentTasks) => {
-      return [...currentTasks, newTask]
-    })
-
-    setCreateTaskStatus(null)
+      setTasks((currentTasks) => [...currentTasks, task])
+      setCreateTaskStatus(null)
+    } catch {
+      return
+    }
   }
 
   const handleDeleteRequest = (taskId: string) => {
@@ -95,6 +110,7 @@ export const KanbanBoard = () => {
   }
 
   const handleCloseCreateTask = () => {
+    resetCreateTask()
     setCreateTaskStatus(null)
   }
 
@@ -330,6 +346,7 @@ export const KanbanBoard = () => {
             onSubmit={handleCreateTask}
             onCancel={handleCloseCreateTask}
             initialStatus={createTaskStatus}
+            submitError={createTaskErrorMessage}
           />
         </CreateTaskDialog>
       )}

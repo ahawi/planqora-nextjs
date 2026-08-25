@@ -1,16 +1,68 @@
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, test } from 'vitest'
+import { beforeEach, describe, expect, test, vi } from 'vitest'
+
+import { StoreProvider } from '@/src/app/providers'
+import type { Task } from '@/src/entities/task'
+import type { CreateTaskRequest } from '@/src/features/create-task'
 
 import { KanbanBoard } from './kanban-board'
+
+const { createTaskMock, mutationStateMock } = vi.hoisted(() => ({
+  createTaskMock: vi.fn(),
+  mutationStateMock: {
+    error: undefined as unknown,
+    reset: vi.fn(),
+  },
+}))
+
+vi.mock('@/src/features/create-task', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('@/src/features/create-task')>()
+
+  return {
+    ...actual,
+    useCreateTaskMutation: () => [createTaskMock, mutationStateMock],
+  }
+})
+
+beforeEach(() => {
+  vi.clearAllMocks()
+  mutationStateMock.error = undefined
+
+  createTaskMock.mockImplementation((input: CreateTaskRequest) => {
+    const task: Task = {
+      id: 'created-task',
+      title: input.title,
+      deadline: input.deadline,
+      status: input.status,
+      priority: input.priority,
+      tag: input.tag,
+      assignee: input.assignee,
+      space: 'Обучение',
+      comments: 0,
+      progress: 0,
+      coverTone: input.priority === 'high' ? 'warning' : 'primary',
+    }
+
+    return {
+      unwrap: vi.fn().mockResolvedValue(task),
+    }
+  })
+})
 
 const setup = () => {
   const user = userEvent.setup()
 
-  render(<KanbanBoard />)
+  render(
+    <StoreProvider>
+      <KanbanBoard spaceId="space-1" />
+    </StoreProvider>,
+  )
 
   return { user }
 }
+
 describe('KanbanBoard', () => {
   test('перемещает задачу в следующую колонку', async () => {
     const { user } = setup()
@@ -88,7 +140,19 @@ describe('KanbanBoard', () => {
       }),
     )
 
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(createTaskMock).toHaveBeenCalledWith({
+      title: 'Подготовить документацию',
+      deadline: '2026-08-25',
+      status: 'backlog',
+      priority: 'medium',
+      tag: '',
+      assignee: '',
+      spaceId: 'space-1',
+    })
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    })
 
     const backlogHeading = screen.getByRole('heading', {
       name: 'Бэклог',
@@ -185,7 +249,9 @@ describe('KanbanBoard', () => {
       }),
     )
 
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    })
 
     expect(
       within(todoColumn).getByRole('link', {
@@ -277,7 +343,9 @@ describe('KanbanBoard', () => {
 
     await user.click(within(dialog).getByRole('button', { name: 'Сохранить' }))
 
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    })
 
     expect(
       screen.getByRole('link', {
@@ -614,5 +682,77 @@ describe('KanbanBoard', () => {
         name: 'Настроить авторизацию',
       }),
     ).toBeInTheDocument()
+  })
+
+  test('показывает ошибку создания задачи и сбрасывает ее при закрытии', async () => {
+    mutationStateMock.error = {
+      status: 500,
+      data: {
+        error: 'Internal server error',
+      },
+    }
+
+    const { user } = setup()
+
+    await user.click(
+      screen.getByRole('button', {
+        name: 'Новая задача',
+      }),
+    )
+
+    const dialog = screen.getByRole('dialog')
+
+    expect(within(dialog).getByRole('alert')).toHaveTextContent(
+      'Не удалось создать задачу. Попробуйте ещё раз.',
+    )
+
+    await user.click(
+      within(dialog).getByRole('button', {
+        name: 'Закрыть окно создания задачи',
+      }),
+    )
+
+    expect(mutationStateMock.reset).toHaveBeenCalledTimes(1)
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  test('не закрывает диалог при ошибке создания задачи', async () => {
+    createTaskMock.mockReturnValueOnce({
+      unwrap: vi.fn().mockRejectedValue(new Error('Request failed')),
+    })
+
+    const { user } = setup()
+
+    await user.click(
+      screen.getByRole('button', {
+        name: 'Новая задача',
+      }),
+    )
+
+    const dialog = screen.getByRole('dialog')
+
+    await user.type(
+      within(dialog).getByRole('textbox', {
+        name: /Название задачи/,
+      }),
+      'Новая задача',
+    )
+
+    await user.type(
+      within(dialog).getByLabelText(/Срок выполнения/),
+      '2026-08-25',
+    )
+
+    await user.click(
+      within(dialog).getByRole('button', {
+        name: 'Создать задачу',
+      }),
+    )
+
+    await waitFor(() => {
+      expect(createTaskMock).toHaveBeenCalled()
+    })
+
+    expect(dialog).toBeInTheDocument()
   })
 })

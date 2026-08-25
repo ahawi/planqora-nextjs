@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import type { CreateTaskInput } from './types'
+import type { CreateTaskFormInput } from './types'
 
 export const createTaskSchema = z.object({
   title: z
@@ -13,5 +13,4 @@ export const createTaskSchema = z.object({
   priority: z.enum(['low', 'medium', 'high']),
   tag: z.string().trim(),
   assignee: z.string().trim(),
-  space: z.string().trim(),
-}) satisfies z.ZodType<CreateTaskInput>
+}) satisfies z.ZodType<CreateTaskFormInput>
