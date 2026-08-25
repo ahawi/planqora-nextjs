@@ -9,12 +9,13 @@ import { cn } from '@/src/shared/lib'
 import { Button, Select } from '@/src/shared/ui'
 
 import { createTaskSchema } from '../model/create-task-schema'
-import { type CreateTaskInput } from '../model/types'
+import { type CreateTaskFormInput } from '../model/types'
 
 interface CreateTaskFormProps {
   initialStatus?: Task['status']
-  onSubmit: (input: CreateTaskInput) => void
+  onSubmit: (input: CreateTaskFormInput) => Promise<void>
   onCancel: () => void
+  submitError?: string | null
 }
 
 const statuses = Object.entries(statusLabels) as [Task['status'], string][]
@@ -34,13 +35,14 @@ export const CreateTaskForm = ({
   initialStatus,
   onCancel,
   onSubmit,
+  submitError,
 }: CreateTaskFormProps) => {
   const formId = useId()
   const {
     formState: { errors, isSubmitting },
     handleSubmit,
     register,
-  } = useForm<CreateTaskInput>({
+  } = useForm<CreateTaskFormInput>({
     resolver: zodResolver(createTaskSchema),
     defaultValues: {
       title: '',
@@ -49,12 +51,11 @@ export const CreateTaskForm = ({
       priority: 'medium',
       tag: '',
       assignee: '',
-      space: '',
     },
   })
 
-  const fieldId = (name: keyof CreateTaskInput) => `${formId}-${name}`
-  const errorId = (name: keyof CreateTaskInput) => `${fieldId(name)}-error`
+  const fieldId = (name: keyof CreateTaskFormInput) => `${formId}-${name}`
+  const errorId = (name: keyof CreateTaskFormInput) => `${fieldId(name)}-error`
 
   return (
     <form className="grid gap-6" noValidate onSubmit={handleSubmit(onSubmit)}>
@@ -171,7 +172,7 @@ export const CreateTaskForm = ({
           </label>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 max-[560px]:grid-cols-1">
+        <div className="grid gap-4">
           <label className="grid gap-2" htmlFor={fieldId('assignee')}>
             <span className="text-sm font-bold text-secondary-500">
               Исполнитель
@@ -184,21 +185,17 @@ export const CreateTaskForm = ({
               type="text"
             />
           </label>
-
-          <label className="grid gap-2" htmlFor={fieldId('space')}>
-            <span className="text-sm font-bold text-secondary-500">
-              Пространство
-            </span>
-            <input
-              {...register('space')}
-              className={controlClassName}
-              id={fieldId('space')}
-              placeholder="Название пространства"
-              type="text"
-            />
-          </label>
         </div>
       </div>
+
+      {submitError && (
+        <p
+          className="rounded-xl border border-error-400 bg-error-100 px-4 py-3 text-sm font-medium text-error-600"
+          role="alert"
+        >
+          {submitError}
+        </p>
+      )}
 
       <div className="flex justify-end gap-3 border-t border-border pt-5 max-[420px]:grid max-[420px]:grid-cols-2">
         <Button
@@ -216,7 +213,7 @@ export const CreateTaskForm = ({
           size="lg"
           type="submit"
         >
-          Создать задачу
+          {isSubmitting ? 'Создание...' : 'Создать задачу'}
         </Button>
       </div>
     </form>
