@@ -2,6 +2,7 @@ import type { Space } from './types'
 
 export const spacesMock: Space[] = [
   {
+    id: 'space-web-redesign',
     icon: 'WD',
     tone: 'primary',
     title: 'Редизайн сайта',
@@ -10,6 +11,7 @@ export const spacesMock: Space[] = [
     progress: 68,
   },
   {
+    id: 'space-mobile-app',
     icon: 'MA',
     tone: 'warning',
     title: 'Мобильное приложение',
@@ -18,6 +20,7 @@ export const spacesMock: Space[] = [
     progress: 42,
   },
   {
+    id: 'space-marketing',
     icon: 'MK',
     tone: 'success',
     title: 'Маркетинг',
