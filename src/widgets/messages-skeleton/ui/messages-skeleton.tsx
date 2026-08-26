@@ -70,7 +70,7 @@ export const MessagesSkeleton = () => {
           </footer>
         </div>
       </div>
-      <span className="sr-only">Загружаем сообщения…</span>
+      <span className="sr-only">Загружаем сообщения...</span>
     </section>
   )
 }

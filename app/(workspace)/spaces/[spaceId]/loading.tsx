@@ -1,9 +1,9 @@
-import { SpaceRouteSkeleton } from '@/src/widgets/workspace-skeletons'
+import { KanbanBoardSkeleton } from '@/src/widgets/kanban-board'
 
 const SpaceLoading = () => {
   return (
     <div className="h-full animate-[route-loading-reveal_120ms_ease-out_both]">
-      <SpaceRouteSkeleton />
+      <KanbanBoardSkeleton />
     </div>
   )
 }

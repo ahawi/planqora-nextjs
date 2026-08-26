@@ -59,7 +59,7 @@ export const OverviewRouteSkeleton = () => {
         </section>
       </main>
       <OverviewAsideSkeleton />
-      <span className="sr-only">Загружаем обзор…</span>
+      <span className="sr-only">Загружаем обзор...</span>
     </div>
   )
 }

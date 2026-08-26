@@ -54,7 +54,7 @@ export const SettingsSkeleton = () => {
           </div>
         </div>
       </div>
-      <span className="sr-only">Загружаем настройки…</span>
+      <span className="sr-only">Загружаем настройки...</span>
     </section>
   )
 }
