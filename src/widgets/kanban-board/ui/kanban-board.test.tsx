@@ -33,6 +33,7 @@ const {
   editMutationStateMock: {
     error: undefined as unknown,
     reset: vi.fn(),
+    isLoading: false,
   },
   deleteMutationStateMock: {
     error: undefined as unknown,
@@ -84,6 +85,7 @@ beforeEach(() => {
   tasksQueryStateMock.error = undefined
   mutationStateMock.error = undefined
   editMutationStateMock.error = undefined
+  editMutationStateMock.isLoading = false
   deleteMutationStateMock.error = undefined
   deleteMutationStateMock.isLoading = false
 
@@ -922,5 +924,43 @@ describe('KanbanBoard', () => {
     })
 
     expect(deleteButton).toBeDisabled()
+  })
+
+  test('показывает ошибку при неудачном перемещении задачи', async () => {
+    const { user, rerender } = setup()
+
+    await user.click(
+      screen.getByRole('button', {
+        name: 'Переместить задачу Исследовать конкурентов дальше',
+      }),
+    )
+
+    editMutationStateMock.error = {
+      status: 500,
+      data: { error: 'Internal server error' },
+    }
+
+    rerender(
+      <StoreProvider>
+        <KanbanBoard spaceId="space-1" />
+      </StoreProvider>,
+    )
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Не удалось переместить задачу. Попробуйте еще раз.',
+    )
+    expect(editMutationStateMock.reset).toHaveBeenCalledOnce()
+  })
+
+  test('локирует перемещение во время изменения статуса задачи', () => {
+    editMutationStateMock.isLoading = true
+
+    setup()
+
+    expect(
+      screen.getByRole('button', {
+        name: 'Переместить задачу Исследовать конкурентов дальше',
+      }),
+    ).toBeDisabled()
   })
 })
