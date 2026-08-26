@@ -1,3 +1,4 @@
+export { useGetTasksQuery } from './api/task-api'
 export { formatTaskCount } from './lib/format-task-count'
 export { getTaskDueLabel } from './lib/get-task-due-label'
 export { mapTaskDTO } from './lib/map-task'

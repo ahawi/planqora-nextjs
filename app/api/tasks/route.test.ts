@@ -31,7 +31,8 @@ vi.mock('@/src/shared/lib/server/prisma', () => ({
   },
 }))
 
-const createRequest = () => new Request('http://localhost/api/tasks')
+const createRequest = () =>
+  new Request('http://localhost/api/tasks?spaceId=space-1')
 
 describe('GET /api/tasks', () => {
   beforeEach(() => {
@@ -54,6 +55,17 @@ describe('GET /api/tasks', () => {
 
     expect(response.status).toBe(401)
     expect(body).toEqual({ error: 'Unauthorized' })
+    expect(findManyMock).not.toHaveBeenCalled()
+  })
+
+  test('возвращает 400 без идентификатора пространства', async () => {
+    const request = new Request('http://localhost/api/tasks')
+
+    const response = await GET(request)
+    const body = await response.json()
+
+    expect(response.status).toBe(400)
+    expect(body).toEqual({ error: 'Space ID is required' })
     expect(findManyMock).not.toHaveBeenCalled()
   })
 
@@ -111,6 +123,7 @@ describe('GET /api/tasks', () => {
     })
     expect(findManyMock).toHaveBeenCalledWith({
       where: {
+        spaceId: 'space-1',
         space: {
           ownerId: 'user-1',
         },
@@ -234,6 +247,7 @@ describe('POST /api/tasks', () => {
     expect(findFirstMock).not.toHaveBeenCalled()
     expect(createMock).not.toHaveBeenCalled()
   })
+
   test('возвращает 404 для недоступного пространства', async () => {
     findFirstMock.mockResolvedValue(null)
 
