@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 
-import { tasksMock } from '@/src/entities/task'
+import { getTaskById } from '@/src/entities/task/index.server'
+import { requireSession } from '@/src/shared/lib/index.server'
 import { TaskDetails } from '@/src/widgets/task-details'
 
 interface TaskDetailsPageProps {
@@ -9,8 +10,9 @@ interface TaskDetailsPageProps {
 
 const TaskDetailsPage = async ({ params }: TaskDetailsPageProps) => {
   const { taskId } = await params
+  const session = await requireSession()
 
-  const task = tasksMock.find((task) => task.id === taskId)
+  const task = await getTaskById({ taskId, ownerId: session.user.id })
 
   if (!task) notFound()
 
