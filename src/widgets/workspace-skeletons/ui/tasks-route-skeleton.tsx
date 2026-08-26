@@ -32,7 +32,7 @@ export const TasksRouteSkeleton = () => {
           </section>
         ))}
       </div>
-      <span className="sr-only">Загружаем задачи…</span>
+      <span className="sr-only">Загружаем задачи...</span>
     </section>
   )
 }

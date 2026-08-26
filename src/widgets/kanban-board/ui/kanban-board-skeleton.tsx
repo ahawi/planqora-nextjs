@@ -2,9 +2,10 @@ import { Skeleton } from '@/src/shared/ui'
 
 import { KanbanColumnSkeleton } from './kanban-column-skeleton'
 
-export const SpaceRouteSkeleton = () => {
+export const KanbanBoardSkeleton = () => {
   return (
     <section
+      aria-busy="true"
       className="flex h-full min-h-0 flex-col overflow-hidden"
       role="status"
     >
@@ -40,7 +41,7 @@ export const SpaceRouteSkeleton = () => {
           ))}
         </div>
       </div>
-      <span className="sr-only">Загружаем пространство…</span>
+      <span className="sr-only">Загружаем задачи...</span>
     </section>
   )
 }

@@ -5,7 +5,7 @@ export const conversationsMock: Conversation[] = [
     id: 'delba',
     name: 'Дарья Волкова',
     avatar: '/customers/delba-de-oliveira.png',
-    preview: 'Спасибо! Всё получилось…',
+    preview: 'Спасибо! Всё получилось...',
     time: '1 мин.',
     unread: true,
     online: true,
