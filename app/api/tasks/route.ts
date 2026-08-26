@@ -19,13 +19,9 @@ export const GET = async (request: Request) => {
 
     const spaceId = searchParams.get('spaceId')
 
-    if (!spaceId) {
-      return Response.json({ error: 'Space ID is required' }, { status: 400 })
-    }
-
     const tasks = await prisma.task.findMany({
       where: {
-        spaceId,
+        ...(spaceId ? { spaceId } : {}),
         space: {
           ownerId: session.user.id,
         },
