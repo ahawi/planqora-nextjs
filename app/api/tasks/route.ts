@@ -8,6 +8,8 @@ import { auth } from '@/src/shared/lib/server/auth'
 import { prisma } from '@/src/shared/lib/server/prisma'
 
 export const GET = async (request: Request) => {
+  const { searchParams } = new URL(request.url)
+
   try {
     const session = await auth.api.getSession({ headers: request.headers })
 
@@ -15,8 +17,15 @@ export const GET = async (request: Request) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const spaceId = searchParams.get('spaceId')
+
+    if (!spaceId) {
+      return Response.json({ error: 'Space ID is required' }, { status: 400 })
+    }
+
     const tasks = await prisma.task.findMany({
       where: {
+        spaceId,
         space: {
           ownerId: session.user.id,
         },
