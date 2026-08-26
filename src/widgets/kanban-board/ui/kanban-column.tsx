@@ -7,6 +7,7 @@ interface KanbanColumnProps {
   title: string
   tasks: Task[]
   nextStatus?: Task['status']
+  isTaskStatusChanging: boolean
   onTaskStatusChange: (taskId: string, newStatus: Task['status']) => void
   onAddTask: () => void
   onDeleteRequest: (taskId: string) => void
@@ -17,6 +18,7 @@ export const KanbanColumn = ({
   title,
   tasks,
   nextStatus,
+  isTaskStatusChanging,
   onTaskStatusChange,
   onAddTask,
   onDeleteRequest,
@@ -55,6 +57,7 @@ export const KanbanColumn = ({
                 size="sm"
                 variant="secondary"
                 aria-label={`Переместить задачу ${task.title} дальше`}
+                disabled={isTaskStatusChanging}
               >
                 Переместить дальше
               </Button>

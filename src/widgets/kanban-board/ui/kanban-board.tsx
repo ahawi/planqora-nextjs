@@ -62,12 +62,21 @@ export const KanbanBoard = ({ spaceId }: KanbanBoardProps) => {
     },
   ] = useDeleteTaskMutation()
 
+  const [editTask, { error: editTaskError, reset: resetEditTask }] =
+    useEditTaskMutation()
+
+  const [
+    changeTaskStatus,
+    {
+      error: taskStatusError,
+      isLoading: isChangingTaskStatus,
+      reset: resetTaskStatus,
+    },
+  ] = useEditTaskMutation()
+
   const createTaskErrorMessage = createTaskError
     ? 'Не удалось создать задачу. Попробуйте еще раз.'
     : null
-
-  const [editTask, { error: editTaskError, reset: resetEditTask }] =
-    useEditTaskMutation()
 
   const editTaskErrorMessage = editTaskError
     ? 'Не удалось сохранить задачу. Попробуйте еще раз.'
@@ -75,6 +84,10 @@ export const KanbanBoard = ({ spaceId }: KanbanBoardProps) => {
 
   const deleteTaskErrorMessage = deleteTaskError
     ? 'Не удалось удалить задачу. Попробуйте еще раз.'
+    : null
+
+  const taskStatusErrorMessage = taskStatusError
+    ? 'Не удалось переместить задачу. Попробуйте еще раз.'
     : null
 
   const taskToDelete = tasks.find((task) => task.id === taskIdToDelete) ?? null
@@ -97,8 +110,10 @@ export const KanbanBoard = ({ spaceId }: KanbanBoardProps) => {
 
     if (!task) return
 
+    resetTaskStatus()
+
     try {
-      await editTask({
+      await changeTaskStatus({
         taskId,
         body: {
           title: task.title,
@@ -417,6 +432,15 @@ export const KanbanBoard = ({ spaceId }: KanbanBoardProps) => {
         )}
       </header>
 
+      {taskStatusErrorMessage && (
+        <p
+          className="mx-[clamp(20px,3vw,36px)] mt-4 rounded-xl border border-error-400 bg-error-100 px-4 py-3 text-sm font-medium text-error-600"
+          role="alert"
+        >
+          {taskStatusErrorMessage}
+        </p>
+      )}
+
       {createTaskStatus !== null && (
         <CreateTaskDialog onClose={handleCloseCreateTask}>
           <CreateTaskForm
@@ -457,6 +481,7 @@ export const KanbanBoard = ({ spaceId }: KanbanBoardProps) => {
                 onAddTask={() => setCreateTaskStatus(column.id)}
                 onDeleteRequest={handleDeleteRequest}
                 onEditRequest={handleEditRequest}
+                isTaskStatusChanging={isChangingTaskStatus}
               />
             )
           })}
