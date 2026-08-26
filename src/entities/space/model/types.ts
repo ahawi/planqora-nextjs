@@ -1,4 +1,5 @@
 export interface Space {
+  id: string
   description: string
   icon: string
   progress: number

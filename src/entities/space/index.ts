@@ -1,2 +1,5 @@
+export { useGetSpacesQuery } from './api/space-api'
+export { mapSpaceDTO } from './lib/map-space'
 export { spacesMock } from './model/mocks'
+export type { Space } from './model/types'
 export { SpaceCard } from './ui/space-card'
