@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 
 import { getTaskById } from '@/src/entities/task/index.server'
 import { requireSession } from '@/src/shared/lib/index.server'
+import { UserActions } from '@/src/widgets/dashboard-header'
 import { TaskDetails } from '@/src/widgets/task-details'
 
 interface TaskDetailsPageProps {
@@ -16,7 +17,12 @@ const TaskDetailsPage = async ({ params }: TaskDetailsPageProps) => {
 
   if (!task) notFound()
 
-  return <TaskDetails task={task} />
+  return (
+    <TaskDetails
+      task={task}
+      actions={<UserActions userName={session.user.name} />}
+    />
+  )
 }
 
 export default TaskDetailsPage

@@ -1,14 +1,22 @@
 import {
   AdjustmentsHorizontalIcon,
-  BellIcon,
   MagnifyingGlassIcon,
   Squares2X2Icon,
 } from '@heroicons/react/24/outline'
+import type { ReactNode } from 'react'
 
 import type { Task } from '@/src/entities/task'
 import { Button } from '@/src/shared/ui'
 
-export const TaskDetailsHeader = ({ task }: { task: Task }) => {
+interface TaskDetailsHeaderProps {
+  task: Task
+  actions: ReactNode
+}
+
+export const TaskDetailsHeader = ({
+  task,
+  actions,
+}: TaskDetailsHeaderProps) => {
   return (
     <header className="shrink-0 bg-primary-0 px-[clamp(20px,3vw,36px)] pb-7 pt-[clamp(26px,3vw,38px)] max-[860px]:px-[clamp(20px,7vw,32px)]">
       <div className="mb-8 flex items-center justify-between gap-5">
@@ -21,23 +29,7 @@ export const TaskDetailsHeader = ({ task }: { task: Task }) => {
           </h1>
         </div>
         <div className="flex items-center gap-3 max-[860px]:hidden">
-          <Button
-            aria-label="Уведомления"
-            className="relative rounded-full"
-            iconOnly
-            variant="secondary"
-          >
-            <BellIcon />
-            <span className="absolute right-1.5 top-1.5 size-2 rounded-full bg-error-500" />
-          </Button>
-          <Button
-            aria-label="Профиль Насти"
-            className="rounded-full bg-gradient-to-br from-warning-300 to-secondary-400 text-primary-0"
-            iconOnly
-            variant="minimal"
-          >
-            Н
-          </Button>
+          {actions}
         </div>
       </div>
       <div className="flex items-center gap-4 max-[720px]:flex-wrap">
