@@ -6,12 +6,16 @@ interface DeleteTaskDialogProps {
   taskTitle: string
   onCancel: () => void
   onConfirm: () => void
+  errorMessage?: string | null
+  isLoading: boolean
 }
 
 export const DeleteTaskDialog = ({
   taskTitle,
   onCancel,
   onConfirm,
+  errorMessage,
+  isLoading,
 }: DeleteTaskDialogProps) => {
   return (
     <div
@@ -60,6 +64,15 @@ export const DeleteTaskDialog = ({
             будет удалена без возможности восстановления.
           </p>
 
+          {errorMessage && (
+            <p
+              className="rounded-xl border border-error-400 bg-error-100 px-4 py-3 text-sm font-medium text-error-600"
+              role="alert"
+            >
+              {errorMessage}
+            </p>
+          )}
+
           <div className="mt-7 flex justify-end gap-3 border-t border-border pt-5 max-[420px]:grid max-[420px]:grid-cols-2">
             <Button
               className="whitespace-nowrap max-[420px]:px-3 max-[420px]:text-sm"
@@ -75,8 +88,9 @@ export const DeleteTaskDialog = ({
               onClick={onConfirm}
               size="lg"
               type="button"
+              disabled={isLoading}
             >
-              Удалить
+              {isLoading ? 'Удаление...' : 'Удалить'}
             </Button>
           </div>
         </div>

@@ -14,6 +14,7 @@ interface EditTaskFormProps {
   task: Task
   onCancel: () => void
   onSubmit: (input: EditTaskInput) => void
+  submitError?: string | null
 }
 
 const statuses = Object.entries(statusLabels) as [Task['status'], string][]
@@ -30,6 +31,7 @@ export const EditTaskForm = ({
   task,
   onCancel,
   onSubmit,
+  submitError,
 }: EditTaskFormProps) => {
   const formId = useId()
   const fieldId = (name: keyof EditTaskInput) => `${formId}-${name}`
@@ -253,6 +255,15 @@ export const EditTaskForm = ({
         </div>
       </div>
 
+      {submitError && (
+        <p
+          className="rounded-xl border border-error-400 bg-error-100 px-4 py-3 text-sm font-medium text-error-600"
+          role="alert"
+        >
+          {submitError}
+        </p>
+      )}
+
       <div className="flex justify-end gap-3 border-t border-border pt-5 max-[420px]:grid max-[420px]:grid-cols-2">
         <Button
           className="whitespace-nowrap max-[420px]:px-3 max-[420px]:text-sm"
@@ -269,7 +280,7 @@ export const EditTaskForm = ({
           type="submit"
           disabled={isSubmitting}
         >
-          Сохранить
+          {isSubmitting ? 'Сохранение...' : 'Сохранить'}
         </Button>
       </div>
     </form>

@@ -9,12 +9,9 @@ import {
 import { type ChangeEvent, useState } from 'react'
 
 import {
-  deleteTask,
   formatTaskCount,
   type Task,
-  tasksMock,
-  updateTask,
-  updateTaskStatus,
+  useGetTasksQuery,
 } from '@/src/entities/task'
 import {
   CreateTaskDialog,
@@ -22,16 +19,21 @@ import {
   type CreateTaskFormInput,
   useCreateTaskMutation,
 } from '@/src/features/create-task'
-import { DeleteTaskDialog } from '@/src/features/delete-task'
+import {
+  DeleteTaskDialog,
+  useDeleteTaskMutation,
+} from '@/src/features/delete-task'
 import {
   EditTaskDialog,
   EditTaskForm,
   type EditTaskInput,
+  useEditTaskMutation,
 } from '@/src/features/edit-task'
 import { useTaskFilters } from '@/src/features/task-filters'
 import { Button, Chip, Progress, Select } from '@/src/shared/ui'
 
 import { columns } from '../model/columns'
+import { KanbanBoardSkeleton } from './kanban-board-skeleton'
 import { KanbanColumn } from './kanban-column'
 
 interface KanbanBoardProps {
@@ -39,7 +41,7 @@ interface KanbanBoardProps {
 }
 
 export const KanbanBoard = ({ spaceId }: KanbanBoardProps) => {
-  const [tasks, setTasks] = useState(tasksMock)
+  const { data: tasks = [], isLoading, error } = useGetTasksQuery(spaceId)
   const [createTaskStatus, setCreateTaskStatus] = useState<
     Task['status'] | null
   >(null)
@@ -51,8 +53,28 @@ export const KanbanBoard = ({ spaceId }: KanbanBoardProps) => {
   const [createTask, { error: createTaskError, reset: resetCreateTask }] =
     useCreateTaskMutation()
 
+  const [
+    deleteTaskRequest,
+    {
+      error: deleteTaskError,
+      isLoading: isDeletingTask,
+      reset: resetDeleteTask,
+    },
+  ] = useDeleteTaskMutation()
+
   const createTaskErrorMessage = createTaskError
-    ? 'Не удалось создать задачу. Попробуйте ещё раз.'
+    ? 'Не удалось создать задачу. Попробуйте еще раз.'
+    : null
+
+  const [editTask, { error: editTaskError, reset: resetEditTask }] =
+    useEditTaskMutation()
+
+  const editTaskErrorMessage = editTaskError
+    ? 'Не удалось сохранить задачу. Попробуйте еще раз.'
+    : null
+
+  const deleteTaskErrorMessage = deleteTaskError
+    ? 'Не удалось удалить задачу. Попробуйте еще раз.'
     : null
 
   const taskToDelete = tasks.find((task) => task.id === taskIdToDelete) ?? null
@@ -67,23 +89,38 @@ export const KanbanBoard = ({ spaceId }: KanbanBoardProps) => {
     removeCategory,
   } = useTaskFilters(tasks)
 
-  const handleTaskStatusChange = (
+  const handleTaskStatusChange = async (
     taskId: string,
     newStatus: Task['status'],
   ) => {
-    setTasks((currentTasks) =>
-      updateTaskStatus(currentTasks, taskId, newStatus),
-    )
+    const task = tasks.find((task) => task.id === taskId)
+
+    if (!task) return
+
+    try {
+      await editTask({
+        taskId,
+        body: {
+          title: task.title,
+          deadline: task.deadline,
+          status: newStatus,
+          priority: task.priority,
+          tag: task.tag,
+          assignee: task.assignee,
+        },
+      }).unwrap()
+    } catch {
+      return
+    }
   }
 
   const handleCreateTask = async (input: CreateTaskFormInput) => {
     try {
-      const task = await createTask({
+      await createTask({
         ...input,
         spaceId,
       }).unwrap()
 
-      setTasks((currentTasks) => [...currentTasks, task])
       setCreateTaskStatus(null)
     } catch {
       return
@@ -91,17 +128,27 @@ export const KanbanBoard = ({ spaceId }: KanbanBoardProps) => {
   }
 
   const handleDeleteRequest = (taskId: string) => {
+    resetDeleteTask()
     setTaskIdToDelete(taskId)
   }
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (!taskIdToDelete) return
 
-    setTasks((currentTasks) => deleteTask(currentTasks, taskIdToDelete))
-    setTaskIdToDelete(null)
+    const taskId = taskIdToDelete
+
+    try {
+      await deleteTaskRequest(taskId).unwrap()
+
+      resetDeleteTask()
+      setTaskIdToDelete(null)
+    } catch {
+      return
+    }
   }
 
   const handleEditRequest = (taskId: string) => {
+    resetEditTask()
     setTaskIdToEdit(taskId)
   }
 
@@ -115,18 +162,31 @@ export const KanbanBoard = ({ spaceId }: KanbanBoardProps) => {
   }
 
   const handleCancelDelete = () => {
+    resetDeleteTask()
     setTaskIdToDelete(null)
   }
 
   const handleCloseEdit = () => {
+    resetEditTask()
     setTaskIdToEdit(null)
   }
 
-  const handleEditTask = (input: EditTaskInput) => {
+  const handleEditTask = async (input: EditTaskInput) => {
     if (!taskIdToEdit) return
 
-    setTasks((currentTasks) => updateTask(currentTasks, taskIdToEdit, input))
-    setTaskIdToEdit(null)
+    const { space: _space, ...body } = input
+
+    try {
+      await editTask({
+        taskId: taskIdToEdit,
+        body,
+      }).unwrap()
+
+      resetEditTask()
+      setTaskIdToEdit(null)
+    } catch {
+      return
+    }
   }
 
   const handleSearchInput = (event: ChangeEvent<HTMLInputElement>) => {
@@ -154,6 +214,23 @@ export const KanbanBoard = ({ spaceId }: KanbanBoardProps) => {
 
   const handleRemoveAllCategories = () => {
     selectedCategories.forEach((category) => removeCategory(category))
+  }
+
+  if (isLoading) {
+    return <KanbanBoardSkeleton />
+  }
+
+  if (error) {
+    return (
+      <section className="grid h-full min-h-0 place-items-center p-6">
+        <p
+          className="rounded-xl border border-error-400 bg-error-100 px-4 py-3 text-sm font-medium text-error-600"
+          role="alert"
+        >
+          Не удалось загрузить задачи
+        </p>
+      </section>
+    )
   }
 
   return (
@@ -356,6 +433,8 @@ export const KanbanBoard = ({ spaceId }: KanbanBoardProps) => {
           taskTitle={taskToDelete.title}
           onConfirm={handleConfirmDelete}
           onCancel={handleCancelDelete}
+          errorMessage={deleteTaskErrorMessage}
+          isLoading={isDeletingTask}
         />
       )}
 
@@ -390,6 +469,7 @@ export const KanbanBoard = ({ spaceId }: KanbanBoardProps) => {
             task={taskToEdit}
             onSubmit={handleEditTask}
             onCancel={handleCloseEdit}
+            submitError={editTaskErrorMessage}
           />
         </EditTaskDialog>
       )}

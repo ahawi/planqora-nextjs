@@ -3,18 +3,49 @@ import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 
 import { StoreProvider } from '@/src/app/providers'
-import type { Task } from '@/src/entities/task'
+import { type Task, tasksMock } from '@/src/entities/task'
 import type { CreateTaskRequest } from '@/src/features/create-task'
+import type { EditTaskRequest } from '@/src/features/edit-task'
 
 import { KanbanBoard } from './kanban-board'
 
-const { createTaskMock, mutationStateMock } = vi.hoisted(() => ({
+const {
+  createTaskMock,
+  mutationStateMock,
+  editTaskMock,
+  deleteTaskMock,
+  tasksQueryStateMock,
+  editMutationStateMock,
+  deleteMutationStateMock,
+} = vi.hoisted(() => ({
   createTaskMock: vi.fn(),
   mutationStateMock: {
     error: undefined as unknown,
     reset: vi.fn(),
   },
+  editTaskMock: vi.fn(),
+  deleteTaskMock: vi.fn(),
+  tasksQueryStateMock: {
+    data: undefined as Task[] | undefined,
+    isLoading: false,
+    error: undefined as unknown,
+  },
+  editMutationStateMock: {
+    error: undefined as unknown,
+    reset: vi.fn(),
+  },
+  deleteMutationStateMock: {
+    error: undefined as unknown,
+    isLoading: false,
+    reset: vi.fn(),
+  },
 }))
+
+vi.mock('@/src/entities/task', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/src/entities/task')>()
+
+  return { ...actual, useGetTasksQuery: () => tasksQueryStateMock }
+})
 
 vi.mock('@/src/features/create-task', async (importOriginal) => {
   const actual =
@@ -26,9 +57,35 @@ vi.mock('@/src/features/create-task', async (importOriginal) => {
   }
 })
 
+vi.mock('@/src/features/edit-task', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('@/src/features/edit-task')>()
+
+  return {
+    ...actual,
+    useEditTaskMutation: () => [editTaskMock, editMutationStateMock],
+  }
+})
+
+vi.mock('@/src/features/delete-task', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('@/src/features/delete-task')>()
+
+  return {
+    ...actual,
+    useDeleteTaskMutation: () => [deleteTaskMock, deleteMutationStateMock],
+  }
+})
+
 beforeEach(() => {
   vi.clearAllMocks()
+  tasksQueryStateMock.data = tasksMock.map((task) => ({ ...task }))
+  tasksQueryStateMock.isLoading = false
+  tasksQueryStateMock.error = undefined
   mutationStateMock.error = undefined
+  editMutationStateMock.error = undefined
+  deleteMutationStateMock.error = undefined
+  deleteMutationStateMock.isLoading = false
 
   createTaskMock.mockImplementation((input: CreateTaskRequest) => {
     const task: Task = {
@@ -49,22 +106,43 @@ beforeEach(() => {
       unwrap: vi.fn().mockResolvedValue(task),
     }
   })
+
+  editTaskMock.mockImplementation(
+    ({ taskId, body }: { taskId: Task['id']; body: EditTaskRequest }) => {
+      const task: Task = {
+        id: taskId,
+        ...body,
+        space: 'Редизайн сайта',
+        comments: 2,
+        progress: 30,
+        coverTone: body.priority === 'high' ? 'warning' : 'primary',
+      }
+
+      return {
+        unwrap: vi.fn().mockResolvedValue(task),
+      }
+    },
+  )
+
+  deleteTaskMock.mockReturnValue({
+    unwrap: vi.fn().mockResolvedValue(undefined),
+  })
 })
 
 const setup = () => {
   const user = userEvent.setup()
 
-  render(
+  const { rerender } = render(
     <StoreProvider>
       <KanbanBoard spaceId="space-1" />
     </StoreProvider>,
   )
 
-  return { user }
+  return { user, rerender }
 }
 
 describe('KanbanBoard', () => {
-  test('перемещает задачу в следующую колонку', async () => {
+  test('отправляет новый статус задачи', async () => {
     const { user } = setup()
 
     const backlogHeading = screen.getByRole('heading', {
@@ -99,17 +177,18 @@ describe('KanbanBoard', () => {
         name: 'Переместить задачу Исследовать конкурентов дальше',
       }),
     )
-    expect(
-      within(backlogColumn).queryByRole('link', {
-        name: 'Исследовать конкурентов',
-      }),
-    ).not.toBeInTheDocument()
 
-    expect(
-      within(todoColumn).getByRole('link', {
-        name: 'Исследовать конкурентов',
-      }),
-    ).toBeInTheDocument()
+    expect(editTaskMock).toHaveBeenCalledWith({
+      taskId: 'research',
+      body: {
+        title: 'Исследовать конкурентов',
+        deadline: '2026-08-15',
+        status: 'todo',
+        priority: 'high',
+        tag: 'Исследование',
+        assignee: 'АМ',
+      },
+    })
   })
 
   test('создаёт новую задачу и закрывает диалог', async () => {
@@ -153,22 +232,6 @@ describe('KanbanBoard', () => {
     await waitFor(() => {
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     })
-
-    const backlogHeading = screen.getByRole('heading', {
-      name: 'Бэклог',
-    })
-
-    const backlogColumn = backlogHeading.closest('section')
-
-    if (!backlogColumn) {
-      throw new Error('Колонка бэклога не найдена')
-    }
-
-    expect(
-      within(backlogColumn).getByRole('link', {
-        name: 'Подготовить документацию',
-      }),
-    ).toBeInTheDocument()
   })
 
   test('показывает ошибки и не закрывает диалог при пустой форме', async () => {
@@ -199,22 +262,17 @@ describe('KanbanBoard', () => {
     expect(dialog).toBeInTheDocument()
   })
 
-  test('создаёт задачу в выбранной колонке', async () => {
+  test('передает статус выбранной колонки при создании задачи', async () => {
     const { user } = setup()
 
     const todoHeading = screen.getByRole('heading', {
       name: 'К выполнению',
     })
 
-    const backlogHeading = screen.getByRole('heading', {
-      name: 'Бэклог',
-    })
-
     const todoColumn = todoHeading.closest('section')
-    const backlogColumn = backlogHeading.closest('section')
 
-    if (!todoColumn || !backlogColumn) {
-      throw new Error('Колонки канбан-доски не найдены')
+    if (!todoColumn) {
+      throw new Error('Колонка «К выполнению» не найдена')
     }
 
     await user.click(
@@ -253,17 +311,15 @@ describe('KanbanBoard', () => {
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     })
 
-    expect(
-      within(todoColumn).getByRole('link', {
-        name: 'Проверить макеты',
-      }),
-    ).toBeInTheDocument()
-
-    expect(
-      within(backlogColumn).queryByRole('link', {
-        name: 'Проверить макеты',
-      }),
-    ).not.toBeInTheDocument()
+    expect(createTaskMock).toHaveBeenCalledWith({
+      title: 'Проверить макеты',
+      deadline: '2026-08-25',
+      status: 'todo',
+      priority: 'medium',
+      tag: '',
+      assignee: '',
+      spaceId: 'space-1',
+    })
   })
 
   test('не удаляет задачу после отмены', async () => {
@@ -284,15 +340,10 @@ describe('KanbanBoard', () => {
     await user.click(within(dialog).getByRole('button', { name: 'Отмена' }))
 
     expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
-
-    expect(
-      screen.getByRole('link', {
-        name: 'Исследовать конкурентов',
-      }),
-    ).toBeInTheDocument()
+    expect(deleteTaskMock).not.toHaveBeenCalled()
   })
 
-  test('подтверждение удаления закрывает диалог и убирает карточку из колонки', async () => {
+  test('отправляет запрос удаления и закрывает диалог', async () => {
     const { user } = setup()
 
     await user.click(
@@ -309,18 +360,14 @@ describe('KanbanBoard', () => {
 
     await user.click(within(dialog).getByRole('button', { name: 'Удалить' }))
 
-    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
+    })
 
-    expect(
-      screen.queryByRole('link', {
-        name: 'Исследовать конкурентов',
-      }),
-    ).not.toBeInTheDocument()
-
-    expect(screen.getByText(/7 задач/)).toBeInTheDocument()
+    expect(deleteTaskMock).toHaveBeenCalledWith('research')
   })
 
-  test('редактирует задачу и закрывает диалог', async () => {
+  test('отправляет изменения задачи и закрывает диалог', async () => {
     const { user } = setup()
 
     await user.click(
@@ -347,17 +394,17 @@ describe('KanbanBoard', () => {
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     })
 
-    expect(
-      screen.getByRole('link', {
-        name: 'Подготовить документацию',
-      }),
-    ).toBeInTheDocument()
-
-    expect(
-      screen.queryByRole('link', {
-        name: 'Исследовать конкурентов',
-      }),
-    ).not.toBeInTheDocument()
+    expect(editTaskMock).toHaveBeenCalledWith({
+      taskId: 'research',
+      body: {
+        title: 'Подготовить документацию',
+        deadline: '2026-08-15',
+        status: 'backlog',
+        priority: 'high',
+        tag: 'Исследование',
+        assignee: 'АМ',
+      },
+    })
   })
 
   test('не сохраняет изменения после отмены редактирования', async () => {
@@ -384,18 +431,7 @@ describe('KanbanBoard', () => {
     await user.click(within(dialog).getByRole('button', { name: 'Отмена' }))
 
     expect(dialog).not.toBeInTheDocument()
-
-    expect(
-      screen.getByRole('link', {
-        name: 'Исследовать конкурентов',
-      }),
-    ).toBeInTheDocument()
-
-    expect(
-      screen.queryByRole('link', {
-        name: 'Подготовить документацию',
-      }),
-    ).not.toBeInTheDocument()
+    expect(editTaskMock).not.toHaveBeenCalled()
   })
 
   test('не сохраняет задачу с пустым названием', async () => {
@@ -703,7 +739,7 @@ describe('KanbanBoard', () => {
     const dialog = screen.getByRole('dialog')
 
     expect(within(dialog).getByRole('alert')).toHaveTextContent(
-      'Не удалось создать задачу. Попробуйте ещё раз.',
+      'Не удалось создать задачу. Попробуйте еще раз.',
     )
 
     await user.click(
@@ -754,5 +790,137 @@ describe('KanbanBoard', () => {
     })
 
     expect(dialog).toBeInTheDocument()
+  })
+
+  test('показывает скелетон во время загрузки задач', () => {
+    tasksQueryStateMock.data = undefined
+    tasksQueryStateMock.isLoading = true
+
+    setup()
+
+    expect(screen.getByRole('status')).toHaveTextContent('Загружаем задачи...')
+
+    expect(
+      screen.queryByRole('heading', {
+        name: 'Бэклог',
+      }),
+    ).not.toBeInTheDocument()
+  })
+
+  test('показывает ошибку загрузки задач', () => {
+    tasksQueryStateMock.data = undefined
+    tasksQueryStateMock.error = {
+      status: 500,
+      data: {
+        error: 'Internal server error',
+      },
+    }
+
+    setup()
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Не удалось загрузить задачи',
+    )
+
+    expect(
+      screen.queryByRole('heading', {
+        name: 'Бэклог',
+      }),
+    ).not.toBeInTheDocument()
+  })
+
+  test('показывает ошибку редактирования и сбрасывает ее при закрытии', async () => {
+    const { user, rerender } = setup()
+
+    await user.click(
+      screen.getByRole('button', {
+        name: 'Редактировать задачу Исследовать конкурентов',
+      }),
+    )
+
+    editMutationStateMock.error = {
+      status: 500,
+      data: { error: 'Internal server error' },
+    }
+
+    rerender(
+      <StoreProvider>
+        <KanbanBoard spaceId="space-1" />
+      </StoreProvider>,
+    )
+
+    const dialog = screen.getByRole('dialog')
+
+    expect(within(dialog).getByRole('alert')).toHaveTextContent(
+      'Не удалось сохранить задачу. Попробуйте еще раз.',
+    )
+
+    editMutationStateMock.reset.mockClear()
+
+    await user.click(
+      within(dialog).getByRole('button', {
+        name: 'Закрыть окно редактирования задачи',
+      }),
+    )
+
+    expect(editMutationStateMock.reset).toHaveBeenCalledOnce()
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  test('показывает ошибку удаления и сбрасывает ее при закрытии', async () => {
+    const { user, rerender } = setup()
+
+    await user.click(
+      screen.getByRole('button', {
+        name: 'Удалить задачу Исследовать конкурентов',
+      }),
+    )
+
+    deleteMutationStateMock.error = {
+      status: 500,
+      data: { error: 'Internal server error' },
+    }
+
+    rerender(
+      <StoreProvider>
+        <KanbanBoard spaceId="space-1" />
+      </StoreProvider>,
+    )
+
+    const dialog = screen.getByRole('alertdialog')
+
+    expect(within(dialog).getByRole('alert')).toHaveTextContent(
+      'Не удалось удалить задачу. Попробуйте еще раз.',
+    )
+
+    deleteMutationStateMock.reset.mockClear()
+
+    await user.click(
+      within(dialog).getByRole('button', {
+        name: 'Закрыть окно удаления задачи',
+      }),
+    )
+
+    expect(deleteMutationStateMock.reset).toHaveBeenCalledOnce()
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
+  })
+
+  test('блокирует кнопку во время удаления задачи', async () => {
+    deleteMutationStateMock.isLoading = true
+
+    const { user } = setup()
+
+    await user.click(
+      screen.getByRole('button', {
+        name: 'Удалить задачу Исследовать конкурентов',
+      }),
+    )
+
+    const dialog = screen.getByRole('alertdialog')
+    const deleteButton = within(dialog).getByRole('button', {
+      name: 'Удаление...',
+    })
+
+    expect(deleteButton).toBeDisabled()
   })
 })
