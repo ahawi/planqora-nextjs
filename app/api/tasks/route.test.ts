@@ -58,15 +58,24 @@ describe('GET /api/tasks', () => {
     expect(findManyMock).not.toHaveBeenCalled()
   })
 
-  test('возвращает 400 без идентификатора пространства', async () => {
+  test('возвращает все задачи пользователя без идентификатора пространства', async () => {
     const request = new Request('http://localhost/api/tasks')
 
     const response = await GET(request)
     const body = await response.json()
 
-    expect(response.status).toBe(400)
-    expect(body).toEqual({ error: 'Space ID is required' })
-    expect(findManyMock).not.toHaveBeenCalled()
+    expect(response.status).toBe(200)
+    expect(body).toEqual({ tasks: [] })
+
+    expect(findManyMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          space: {
+            ownerId: 'user-1',
+          },
+        },
+      }),
+    )
   })
 
   test('возвращает 500 при ошибке базы данных', async () => {
