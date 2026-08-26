@@ -1,3 +1,4 @@
+export { useEditTaskMutation } from './api/edit-task-api'
 export { editTaskRequestSchema } from './model/edit-task-request-schema'
 export type { EditTaskInput, EditTaskRequest } from './model/types'
 export { EditTaskDialog } from './ui/edit-task-dialog'
