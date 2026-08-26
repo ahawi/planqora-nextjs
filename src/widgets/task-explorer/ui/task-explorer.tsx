@@ -6,8 +6,7 @@ import {
 } from '@heroicons/react/24/outline'
 import { type ChangeEvent, type ReactNode } from 'react'
 
-import type { Task } from '@/src/entities/task'
-import { tasksMock } from '@/src/entities/task'
+import { type Task, useGetTasksQuery } from '@/src/entities/task'
 import { type TaskSort, useTaskFilters } from '@/src/features/task-filters'
 import { Chip, EmptyState, SectionHeading, Select } from '@/src/shared/ui'
 
@@ -15,9 +14,11 @@ import { TaskGrid } from './task-grid'
 
 interface TaskExplorerProps {
   header: ReactNode
+  loading: ReactNode
 }
 
-export const TaskExplorer = ({ header }: TaskExplorerProps) => {
+export const TaskExplorer = ({ header, loading }: TaskExplorerProps) => {
+  const { data: tasks = [], isLoading, error } = useGetTasksQuery()
   const {
     searchQuery,
     setSearchQuery,
@@ -27,7 +28,7 @@ export const TaskExplorer = ({ header }: TaskExplorerProps) => {
     visibleTasks,
     sortOrder,
     setSortOrder,
-  } = useTaskFilters(tasksMock)
+  } = useTaskFilters(tasks)
 
   const urgentTasks = visibleTasks.filter((task) => task.priority === 'high')
   const recentTasks = visibleTasks.filter((task) => task.priority !== 'high')
@@ -42,6 +43,23 @@ export const TaskExplorer = ({ header }: TaskExplorerProps) => {
 
   const handleSortTasks = (event: ChangeEvent<HTMLSelectElement>) => {
     setSortOrder(event.target.value as TaskSort)
+  }
+
+  if (isLoading) {
+    return loading
+  }
+
+  if (error) {
+    return (
+      <section className="grid h-full min-h-0 place-items-center p-6">
+        <p
+          className="rounded-xl border border-error-400 bg-error-100 px-4 py-3 text-sm font-medium text-error-600"
+          role="alert"
+        >
+          Не удалось загрузить задачи
+        </p>
+      </section>
+    )
   }
 
   return (

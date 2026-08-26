@@ -1,16 +1,44 @@
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, test } from 'vitest'
+import { beforeEach, describe, expect, test, vi } from 'vitest'
+
+import { type Task, tasksMock } from '@/src/entities/task'
 
 import { TaskExplorer } from './task-explorer'
+
+const { tasksQueryStateMock } = vi.hoisted(() => ({
+  tasksQueryStateMock: {
+    data: undefined as Task[] | undefined,
+    isLoading: false,
+    error: undefined as unknown,
+  },
+}))
+
+vi.mock('@/src/entities/task', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/src/entities/task')>()
+
+  return { ...actual, useGetTasksQuery: () => tasksQueryStateMock }
+})
 
 const setup = () => {
   const user = userEvent.setup()
 
-  render(<TaskExplorer header={<header>Мои задачи</header>} />)
+  render(
+    <TaskExplorer
+      header={<header>Мои задачи</header>}
+      loading={<div role="status">Загрузка задач...</div>}
+    />,
+  )
 
   return { user }
 }
+
+beforeEach(() => {
+  vi.clearAllMocks()
+  tasksQueryStateMock.data = tasksMock.map((task) => ({ ...task }))
+  tasksQueryStateMock.isLoading = false
+  tasksQueryStateMock.error = undefined
+})
 
 describe('TaskExplorer', () => {
   test('фильтрует карточки при вводе поискового запроса', async () => {
@@ -161,5 +189,37 @@ describe('TaskExplorer', () => {
       'Собрать UI-kit проекта',
       'Настроить авторизацию',
     ])
+  })
+
+  test('показывает состояние загрузки', () => {
+    tasksQueryStateMock.data = undefined
+    tasksQueryStateMock.isLoading = true
+
+    setup()
+
+    expect(screen.getByRole('status')).toHaveTextContent('Загрузка задач...')
+
+    expect(
+      screen.queryByRole('link', {
+        name: 'Собрать UI-kit проекта',
+      }),
+    ).not.toBeInTheDocument()
+  })
+
+  test('показывает ошибку загрузки задач', () => {
+    tasksQueryStateMock.data = undefined
+    tasksQueryStateMock.error = { status: 500 }
+
+    setup()
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Не удалось загрузить задачи',
+    )
+
+    expect(
+      screen.queryByRole('link', {
+        name: 'Собрать UI-kit проекта',
+      }),
+    ).not.toBeInTheDocument()
   })
 })

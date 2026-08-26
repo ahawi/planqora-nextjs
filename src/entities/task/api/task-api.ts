@@ -8,7 +8,7 @@ interface GetTasksResponse {
 
 const taskApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getTasks: builder.query<Task[], string>({
+    getTasks: builder.query<Task[], string | void>({
       query: (spaceId) => ({
         url: 'tasks',
         params: { spaceId },
