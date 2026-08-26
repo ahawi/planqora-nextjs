@@ -2,6 +2,7 @@ import { delay, ROUTE_SKELETON_DELAY } from '@/src/shared/lib'
 import { requireSession } from '@/src/shared/lib/index.server'
 import { DashboardHeader } from '@/src/widgets/dashboard-header'
 import { TaskExplorer } from '@/src/widgets/task-explorer'
+import { TasksRouteSkeleton } from '@/src/widgets/workspace-skeletons'
 
 export const dynamic = 'force-dynamic'
 
@@ -19,6 +20,7 @@ const TasksPage = async () => {
           userName={session.user.name}
         />
       }
+      loading={<TasksRouteSkeleton />}
     />
   )
 }
