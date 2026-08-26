@@ -307,6 +307,7 @@ describe('POST /api/tasks', () => {
         tag: 'Backend',
         assignee: 'Иван',
         spaceId: 'space-1',
+        completedAt: null,
       },
       include: {
         space: {
@@ -327,5 +328,21 @@ describe('POST /api/tasks', () => {
 
     expect(response.status).toBe(500)
     expect(body).toEqual({ error: 'Internal server error' })
+  })
+
+  test('записывает дату при создании завершенной задачи', async () => {
+    const response = await POST(
+      createPostRequest(JSON.stringify({ ...validInput, status: 'done' })),
+    )
+
+    expect(response.status).toBe(201)
+    expect(createMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          status: 'DONE',
+          completedAt: expect.any(Date),
+        }),
+      }),
+    )
   })
 })

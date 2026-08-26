@@ -110,6 +110,7 @@ export const POST = async (request: Request) => {
         priority: mapTaskPriorityToPrisma(result.data.priority),
         tag: result.data.tag,
         assignee: result.data.assignee,
+        completedAt: result.data.status === 'done' ? new Date() : null,
         spaceId: space.id,
       },
       include: {

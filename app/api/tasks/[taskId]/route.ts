@@ -43,6 +43,7 @@ export const PATCH = async (request: Request, context: TaskRouteContext) => {
       },
       select: {
         id: true,
+        completedAt: true,
       },
     })
 
@@ -61,6 +62,10 @@ export const PATCH = async (request: Request, context: TaskRouteContext) => {
         priority: mapTaskPriorityToPrisma(result.data.priority),
         tag: result.data.tag,
         assignee: result.data.assignee,
+        completedAt:
+          result.data.status === 'done'
+            ? (task.completedAt ?? new Date())
+            : null,
       },
       include: {
         space: {

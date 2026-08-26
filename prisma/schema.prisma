@@ -37,6 +37,7 @@ model Task {
   commentsCount Int          @default(0)
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
+  completedAt   DateTime?
 
   spaceId String
   space   Space  @relation(fields: [spaceId], references: [id], onDelete: Cascade)

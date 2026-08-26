@@ -52,6 +52,22 @@ const createContext = () => ({
   }),
 })
 
+const createUpdatedTaskDTO = (status: 'DONE' | 'IN_PROGRESS') => ({
+  assignee: 'Иван',
+  commentsCount: 0,
+  deadline: new Date('2026-08-30T00:00:00.000Z'),
+  id: 'task-1',
+  priority: 'HIGH',
+  progress: 0,
+  space: {
+    id: 'space-1',
+    title: 'Обучение',
+  },
+  status,
+  tag: 'Backend',
+  title: 'Сделать макет',
+})
+
 describe('PATCH /api/tasks/[taskId]', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -127,6 +143,7 @@ describe('PATCH /api/tasks/[taskId]', () => {
       },
       select: {
         id: true,
+        completedAt: true,
       },
     })
     expect(updateMock).not.toHaveBeenCalled()
@@ -135,6 +152,7 @@ describe('PATCH /api/tasks/[taskId]', () => {
   test('обновляет и возвращает задачу', async () => {
     findFirstMock.mockResolvedValue({
       id: 'task-1',
+      completedAt: null,
     })
 
     updateMock.mockResolvedValue({
@@ -184,6 +202,7 @@ describe('PATCH /api/tasks/[taskId]', () => {
         priority: 'HIGH',
         tag: 'Backend',
         assignee: 'Иван',
+        completedAt: null,
       },
       include: {
         space: {
@@ -205,6 +224,90 @@ describe('PATCH /api/tasks/[taskId]', () => {
     expect(response.status).toBe(500)
     expect(body).toEqual({ error: 'Internal server error' })
     expect(updateMock).not.toHaveBeenCalled()
+  })
+
+  test('записывает дату при первом переходе задачи в done', async () => {
+    findFirstMock.mockResolvedValue({
+      id: 'task-1',
+      completedAt: null,
+    })
+
+    updateMock.mockResolvedValue(createUpdatedTaskDTO('DONE'))
+
+    const response = await PATCH(
+      createPatchRequest(
+        JSON.stringify({
+          ...validInput,
+          status: 'done',
+        }),
+      ),
+      createContext(),
+    )
+
+    expect(response.status).toBe(200)
+
+    expect(updateMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          status: 'DONE',
+          completedAt: expect.any(Date),
+        }),
+      }),
+    )
+  })
+
+  test('сохраняет прежнюю дату завершенной задачи', async () => {
+    const completedAt = new Date('2026-08-25T12:00:00.000Z')
+
+    findFirstMock.mockResolvedValue({
+      id: 'task-1',
+      completedAt,
+    })
+
+    updateMock.mockResolvedValue(createUpdatedTaskDTO('DONE'))
+
+    const response = await PATCH(
+      createPatchRequest(
+        JSON.stringify({
+          ...validInput,
+          status: 'done',
+        }),
+      ),
+      createContext(),
+    )
+
+    expect(response.status).toBe(200)
+
+    expect(updateMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          status: 'DONE',
+          completedAt,
+        }),
+      }),
+    )
+  })
+
+  test('очищает дату при возврате задачи из done', async () => {
+    findFirstMock.mockResolvedValue({
+      id: 'task-1',
+      completedAt: new Date('2026-08-25T12:00:00.000Z'),
+    })
+
+    updateMock.mockResolvedValue(createUpdatedTaskDTO('IN_PROGRESS'))
+
+    const response = await PATCH(createPatchRequest(), createContext())
+
+    expect(response.status).toBe(200)
+
+    expect(updateMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          status: 'IN_PROGRESS',
+          completedAt: null,
+        }),
+      }),
+    )
   })
 })
 
