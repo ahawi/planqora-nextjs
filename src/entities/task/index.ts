@@ -1,5 +1,10 @@
-export { useGetTasksQuery } from './api/task-api'
+export { useGetTaskDashboardStatsQuery, useGetTasksQuery } from './api/task-api'
 export { formatTaskCount } from './lib/format-task-count'
+export {
+  getTaskDashboardStats,
+  type TaskActivityDay,
+  type TaskDashboardStats,
+} from './lib/get-task-dashboard-stats'
 export { getTaskDueLabel } from './lib/get-task-due-label'
 export { mapTaskDTO } from './lib/map-task'
 export {
