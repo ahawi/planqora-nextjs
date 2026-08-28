@@ -1,6 +1,7 @@
 import { baseApi } from '@/src/shared/api'
 
 import type { TaskDashboardStats } from '../lib/get-task-dashboard-stats'
+import type { GetTasksQuery } from '../model/get-tasks-query-schema'
 import type { Task } from '../model/types'
 
 interface GetTasksResponse {
@@ -13,10 +14,10 @@ interface GetTaskDashboardStatsResponse {
 
 const taskApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getTasks: builder.query<Task[], string | void>({
-      query: (spaceId) => ({
+    getTasks: builder.query<Task[], GetTasksQuery | void>({
+      query: (queryParams) => ({
         url: 'tasks',
-        params: { spaceId },
+        params: queryParams ?? {},
       }),
       transformResponse: (response: GetTasksResponse) => response.tasks,
       providesTags: ['Task'],

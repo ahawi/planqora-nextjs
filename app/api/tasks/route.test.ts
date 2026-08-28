@@ -159,6 +159,48 @@ describe('GET /api/tasks', () => {
       },
     })
   })
+
+  test('фильтрует задачи по сроку выполнения', async () => {
+    const request = new Request(
+      'http://localhost/api/tasks?deadline=2026-08-28',
+    )
+
+    const response = await GET(request)
+    const body = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(body).toEqual({ tasks: [] })
+
+    expect(findManyMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          deadline: new Date('2026-08-28T00:00:00.000Z'),
+          space: {
+            ownerId: 'user-1',
+          },
+        },
+      }),
+    )
+  })
+
+  test('возвращает 400 при некорректном формате срока', async () => {
+    const request = new Request(
+      'http://localhost/api/tasks?deadline=28-08-2026',
+    )
+
+    const response = await GET(request)
+    const body = await response.json()
+
+    expect(response.status).toBe(400)
+    expect(body.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          path: ['deadline'],
+        }),
+      ]),
+    )
+    expect(findManyMock).not.toHaveBeenCalled()
+  })
 })
 
 const validInput = {

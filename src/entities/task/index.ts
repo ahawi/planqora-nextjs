@@ -15,6 +15,7 @@ export {
 } from './lib/map-task-enums'
 export { priorityLabels, statusLabels } from './model/constants'
 export { deleteTask } from './model/delete-task'
+export { getTasksQuerySchema } from './model/get-tasks-query-schema'
 export { tasksMock, upcomingTasksMock } from './model/mocks'
 export { type Task } from './model/types'
 export { updateTask } from './model/update-task'
