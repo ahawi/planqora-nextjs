@@ -1,4 +1,5 @@
 import {
+  getTasksQuerySchema,
   mapTaskDTO,
   mapTaskPriorityToPrisma,
   mapTaskStatusToPrisma,
@@ -17,11 +18,30 @@ export const GET = async (request: Request) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const spaceId = searchParams.get('spaceId')
+    const queryResult = getTasksQuerySchema.safeParse({
+      spaceId: searchParams.get('spaceId') ?? undefined,
+      deadline: searchParams.get('deadline') ?? undefined,
+    })
+
+    if (!queryResult.success) {
+      return Response.json(
+        {
+          errors: queryResult.error.issues,
+        },
+        { status: 400 },
+      )
+    }
+
+    const { spaceId, deadline } = queryResult.data
 
     const tasks = await prisma.task.findMany({
       where: {
         ...(spaceId ? { spaceId } : {}),
+        ...(deadline
+          ? {
+              deadline: new Date(`${deadline}T00:00:00.000Z`),
+            }
+          : {}),
         space: {
           ownerId: session.user.id,
         },

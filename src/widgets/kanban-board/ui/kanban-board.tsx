@@ -41,7 +41,7 @@ interface KanbanBoardProps {
 }
 
 export const KanbanBoard = ({ spaceId }: KanbanBoardProps) => {
-  const { data: tasks = [], isLoading, error } = useGetTasksQuery(spaceId)
+  const { data: tasks = [], isLoading, error } = useGetTasksQuery({ spaceId })
   const [createTaskStatus, setCreateTaskStatus] = useState<
     Task['status'] | null
   >(null)
